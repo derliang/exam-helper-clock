@@ -1,1 +1,597 @@
-到derliang@gmail.com的github，為這個程式開一個公開專案，我要能透過github執行這個程式，並push
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>段考小幫手</title>
+    <style>
+        :root {
+            --bg-dark: #020617;
+            --panel-bg: rgba(255, 255, 255, 0.05);
+            --accent: #6366f1;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --hero-bg: rgba(0, 0, 0, 0.7);
+            --clock-face: #ffffff;
+            --clock-border: #e2e8f0;
+            --hour-mark: #1e293b;
+            --min-mark: #94a3b8;
+        }
+
+        @keyframes breathe {
+            0%, 100% { opacity: 1; text-shadow: 0 0 30px rgba(245, 158, 11, 0.8); transform: scale(1.02); }
+            50% { opacity: 0.5; text-shadow: 0 0 10px rgba(245, 158, 11, 0.2); transform: scale(1); }
+        }
+        .breathe-animation { animation: breathe 3s ease-in-out infinite; }
+
+        @keyframes border-glow {
+            0%, 100% { border-color: var(--accent); box-shadow: 0 0 5px var(--accent); }
+            50% { border-color: #fff; box-shadow: 0 0 15px var(--accent); }
+        }
+        .active-exam-card { 
+            border: 2px solid var(--accent) !important; 
+            background: rgba(99, 102, 241, 0.2) !important;
+            animation: border-glow 2s infinite;
+        }
+        .past-exam-card { opacity: 0.4; filter: grayscale(0.5); }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: -apple-system, "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #020617);
+            color: var(--text-main);
+            height: 100vh; width: 100vw; overflow: hidden; display: flex; padding: 1.5vh; 
+        }
+
+        .main-layout { display: grid; grid-template-columns: 320px 1fr; gap: 2vh; width: 100%; height: 100%; }
+        .glass-panel {
+            background: var(--panel-bg); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem;
+            padding: 2vh; display: flex; flex-direction: column; overflow: hidden;
+        }
+        .left-col { display: flex; flex-direction: column; gap: 1.5vh; }
+
+        .info-header {
+            flex: 0 0 auto; cursor: pointer; padding: 2vh;
+            border-left: 8px solid var(--accent); background: rgba(99, 102, 241, 0.15);
+            position: relative; transition: all 0.3s ease;
+            text-align: center;
+        }
+        #date-display { font-size: 2.8rem; font-weight: 800; line-height: 1.2; }
+        #day-display { font-size: 1.8rem; color: var(--accent); font-weight: 600; }
+
+        .attendance-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1vh; }
+        .count-card { background: rgba(0, 0, 0, 0.4); padding: 1vh; border-radius: 1.2rem; text-align: center; }
+        .counter-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 5px; }
+        .side-btn { background: #334155; color: white; border: none; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 1rem; }
+
+        .panel-title { font-size: 1.1rem !important; font-weight: 900 !important; margin-bottom: 5px; }
+
+        .scroll-area { flex: 1; overflow-y: auto; margin-top: 1vh; padding-right: 5px; }
+        .scroll-area::-webkit-scrollbar { width: 4px; }
+        .scroll-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+
+        .right-col { display: flex; flex-direction: column; gap: 0; align-items: center; justify-content: flex-start; }
+        
+        .status-hero {
+            text-align: center; width: 100%; padding: 2vh 2vw;
+            background: var(--hero-bg); border-radius: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            flex: 0 0 auto; z-index: 5; min-height: 30vh;
+            margin-top: 1vh; 
+        }
+        .big-subject { font-size: clamp(3.5rem, 9vh, 8rem); font-weight: 900; letter-spacing: 0.6rem; margin-bottom: 1.5vh; line-height: 1.1; text-align: center; width: 100%; }
+        .time-range-text { 
+            font-size: clamp(2rem, 5.5vh, 4rem); font-family: 'Courier New', monospace; 
+            font-weight: 800; background: rgba(255, 255, 255, 0.05);
+            padding: 1.5vh 3vw; border-radius: 1.5rem; white-space: nowrap; 
+            text-align: center; width: auto;
+        }
+
+        .prep-title { color: var(--warning); font-size: clamp(3.5rem, 8vh, 6.5rem); font-weight: 900; margin-bottom: 1vh; }
+        .countdown-line { font-size: clamp(1.8rem, 4vh, 3rem); font-weight: 700; margin-bottom: 1.5vh; }
+        .todo-box { background: var(--danger); color: white; padding: 1vh 2.5vw; border-radius: 1rem; font-size: clamp(1.2rem, 2.5vh, 1.8rem); font-weight: 800; }
+
+        .clocks-row {
+            display: flex; flex-direction: row; align-items: center; justify-content: center;
+            width: 100%; gap: 2vw; flex: 0 0 auto; 
+            margin-top: 0; 
+        }
+
+        .clock-container {
+            width: 42vh; height: 42vh;
+            display: flex; align-items: center; justify-content: center; position: relative;
+        }
+
+        .analog-clock { 
+            height: 100%; width: 100%;
+            border: 8px solid var(--clock-border); border-radius: 50%; 
+            position: relative; background: var(--clock-face);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.1), 0 10px 30px rgba(0,0,0,0.3); 
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .digital-clock { 
+            font-size: clamp(3.5rem, 14vh, 16vh); 
+            font-family: 'Courier New', monospace; 
+            font-weight: 900; 
+            text-shadow: 0 0 20px rgba(99, 102, 241, 0.6);
+            white-space: nowrap;
+        }
+
+        .mark-container { position: absolute; inset: 0; display: flex; justify-content: center; align-items: flex-start; }
+        .mark-line { border-radius: 1px; }
+
+        .hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom center; transform: translateX(-50%); border-radius: 10px; }
+        .center-nut { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; background: #1e293b; z-index: 10; }
+
+        .arrow-picker { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .arrow-btn { background: #334155; color: white; border: none; width: 40px; height: 30px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; transition: background 0.2s; }
+        .arrow-btn:hover { background: var(--accent); }
+        .picker-group { display: flex; align-items: center; justify-content: center; gap: 8px; }
+        
+        .val-input { 
+            background: #0f172a; border: 1px solid #475569; border-radius: 8px; 
+            width: 65px; height: 50px; text-align: center; 
+            font-size: 1.6rem; font-weight: bold; font-family: 'Courier New', monospace; 
+            color: white; user-select: text;
+        }
+        .val-input::-webkit-outer-spin-button,
+        .val-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .val-input[type=number] { -moz-appearance: textfield; }
+
+        .subject-shortcuts { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; }
+        .subject-btn { background: #334155; color: white; border: 1px solid #475569; padding: 6px 0; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
+        
+        .modal { 
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); 
+            display: none; justify-content: center; align-items: flex-start; 
+            z-index: 100; padding-top: 2vh; padding-left: 15px; padding-right: 15px;
+            overflow-y: auto;
+        }
+        .modal-content { 
+            background: #1e293b; padding: 1.5rem; border-radius: 1.2rem; 
+            width: 100%; max-width: 540px; box-shadow: 0 20px 60px rgba(0,0,0,0.7); 
+            border: 1px solid #475569; position: relative;
+            margin-bottom: 2vh;
+        }
+        .modal-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem; color: var(--accent); text-align: center; }
+
+        .schedule-card {
+            background: rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 10px 14px; margin-bottom: 6px;
+            display: flex; align-items: center; justify-content: space-between;
+            border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease;
+        }
+        .schedule-card .sub-name { font-size: 1.15rem; font-weight: 800; color: #fff; }
+        .schedule-card .sub-time { font-size: 1.3rem; font-family: 'Courier New', monospace; font-weight: 800; color: #fff; }
+        
+        #error-overlay { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--danger); color: white; padding: 12px 24px; border-radius: 10px; z-index: 1000; font-weight: bold; display: none; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.5); }
+    </style>
+</head>
+<body>
+
+    <div id="error-overlay"></div>
+
+    <div class="main-layout">
+        <div class="left-col">
+            <div class="glass-panel info-header" onclick="openTimeModal()">
+                <div id="date-display">--月--日</div>
+                <div id="day-display">星期-</div>
+                <div style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; opacity: 0.5;">⚙</div>
+            </div>
+
+            <div class="attendance-grid">
+                <div class="count-card">
+                    <p class="panel-title" style="color: var(--text-dim);">應到</p>
+                    <div class="counter-row">
+                        <button class="side-btn" onclick="adjustCount('total', 1)">+</button>
+                        <span id="total-val" style="font-size: 1.3rem; font-weight: 800;">45</span>
+                        <button class="side-btn" onclick="adjustCount('total', -1)">-</button>
+                    </div>
+                </div>
+                <div class="count-card">
+                    <p class="panel-title" style="color: var(--text-dim);">實到</p>
+                    <div class="counter-row">
+                        <button class="side-btn" onclick="adjustCount('present', 1)">+</button>
+                        <span id="present-val" style="font-size: 1.3rem; font-weight: 800; color: var(--success);">45</span>
+                        <button class="side-btn" onclick="adjustCount('present', -1)">-</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel" style="flex: 0 0 auto; max-height: 120px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 5px;">
+                    <h3 class="panel-title" style="color: var(--danger);">缺席名單(<span id="absent-count-label">0</span>)</h3>
+                    <button onclick="openModal('absent')" style="background:none; border:none; color:white; cursor:pointer; font-size:1.3rem;">+</button>
+                </div>
+                <div id="absent-list" class="scroll-area" style="display:flex; flex-wrap:wrap; gap:5px;"></div>
+            </div>
+
+            <div class="glass-panel" style="flex: 1;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 5px;">
+                    <h3 class="panel-title">今日考程</h3>
+                    <button onclick="openExamModal()" style="background:none; border:none; color:white; cursor:pointer; font-size:1.3rem;">+</button>
+                </div>
+                <div id="schedule-list" class="scroll-area"></div>
+            </div>
+        </div>
+
+        <div class="right-col">
+            <div class="clocks-row">
+                <div class="clock-container">
+                    <div id="analog-clock" class="analog-clock"></div>
+                </div>
+                <div id="digital-clock" class="digital-clock">00:00</div>
+            </div>
+
+            <div id="status-box" class="status-hero">
+                <div id="exam-mode">
+                    <div id="subject-now" class="big-subject">請安靜自習</div>
+                    <div id="range-now" class="time-range-text">至 --:--</div>
+                </div>
+                <div id="gap-mode" style="display: none;">
+                    <div class="prep-title breathe-animation">請準備</div>
+                    <div id="gap-countdown" class="countdown-line">倒數--分--秒 即將考 XX科</div>
+                    <div class="todo-box">座位清空、檢查文具、喝水上廁所</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-absent" class="modal"><div class="modal-content">
+        <div class="modal-title">新增缺席人員</div>
+        <input type="text" id="input-absent" placeholder="請輸入【座號】與【姓名】" style="width:100%; padding:12px; margin-bottom:20px; background:#0f172a; border:1px solid #475569; border-radius:10px; color:white; user-select: text;">
+        <div style="display:flex; gap:10px;"><button style="flex:1; padding:12px; background:#334155; color:white; border:none; border-radius:10px;" onclick="closeModal()">取消</button><button style="flex:1; padding:12px; background:var(--accent); color:white; border:none; border-radius:10px;" onclick="submitAbsent()">確認</button></div>
+    </div></div>
+
+    <div id="modal-exam" class="modal"><div class="modal-content">
+        <div id="exam-modal-title" class="modal-title">排定考程</div>
+        <input type="hidden" id="edit-exam-id">
+        <div class="subject-shortcuts">
+            <button class="subject-btn" onclick="setSub('國文')">國文</button>
+            <button class="subject-btn" onclick="setSub('中文作文')">中文作文</button>
+            <button class="subject-btn" onclick="setSub('英語文')">英語文</button>
+            <button class="subject-btn" onclick="setSub('英聽')">英聽</button>
+            <button class="subject-btn" onclick="setSub('數學')">數學</button>
+            <button class="subject-btn" onclick="setSub('歷史')">歷史</button>
+            <button class="subject-btn" onclick="setSub('地理')">地理</button>
+            <button class="subject-btn" onclick="setSub('公民')">公民</button>
+            <button class="subject-btn" onclick="setSub('物理')">物理</button>
+            <button class="subject-btn" onclick="setSub('化學')">化學</button>
+            <button class="subject-btn" onclick="setSub('生物')">生物</button>
+            <button class="subject-btn" onclick="setSub('理化')">理化</button>
+            <button class="subject-btn" onclick="setSub('地科')">地科</button>
+        </div>
+        <input type="text" id="input-sub" placeholder="或手動輸入科目" style="width:100%; padding:8px; margin-bottom:10px; background:#0f172a; border:1px solid #475569; border-radius:6px; color:white; user-select: text;">
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+                <div style="font-size: 0.8rem; text-align: center; margin-bottom: 2px;">開始時間</div>
+                <div class="picker-group">
+                    <div class="arrow-picker"><button class="arrow-btn" onclick="adjustPicker('ex-st-h', 1, 0, 23)">▲</button><input type="number" class="val-input" id="ex-st-h" value="08"><button class="arrow-btn" onclick="adjustPicker('ex-st-h', -1, 0, 23)">▼</button></div>
+                    <div style="font-size: 1.2rem; font-weight: bold;">:</div>
+                    <div class="arrow-picker"><button class="arrow-btn" onclick="adjustPicker('ex-st-m', 5, 0, 59)">▲</button><input type="number" class="val-input" id="ex-st-m" value="00"><button class="arrow-btn" onclick="adjustPicker('ex-st-m', -5, 0, 59)">▼</button></div>
+                </div>
+            </div>
+            <div>
+                <div style="font-size: 0.8rem; text-align: center; margin-bottom: 2px;">結束時間</div>
+                <div class="picker-group">
+                    <div class="arrow-picker"><button class="arrow-btn" onclick="adjustPicker('ex-et-h', 1, 0, 23)">▲</button><input type="number" class="val-input" id="ex-et-h" value="09"><button class="arrow-btn" onclick="adjustPicker('ex-et-h', -1, 0, 23)">▼</button></div>
+                    <div style="font-size: 1.2rem; font-weight: bold;">:</div>
+                    <div class="arrow-picker"><button class="arrow-btn" onclick="adjustPicker('ex-et-m', 5, 0, 59)">▲</button><input type="number" class="val-input" id="ex-et-m" value="00"><button class="arrow-btn" onclick="adjustPicker('ex-et-m', -5, 0, 59)">▼</button></div>
+                </div>
+            </div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:15px;"><button style="flex:1; padding:10px; background:#334155; color:white; border:none; border-radius:8px;" onclick="closeModal()">取消</button><button style="flex:1; padding:10px; background:var(--accent); color:white; border:none; border-radius:8px;" onclick="submitExam()">儲存考程</button></div>
+    </div></div>
+
+    <div id="modal-time" class="modal"><div class="modal-content">
+        <div class="modal-title">設定現在時間</div>
+        <div class="picker-group">
+            <div class="arrow-picker">
+                <button class="arrow-btn" onclick="adjustPicker('tk-mo', 1, 1, 12)">▲</button>
+                <input type="number" class="val-input" id="tk-mo" value="01">
+                <button class="arrow-btn" onclick="adjustPicker('tk-mo', -1, 1, 12)">▼</button>
+                <div style="font-size:0.7rem;">月</div>
+            </div>
+            <div class="arrow-picker">
+                <button class="arrow-btn" onclick="adjustPicker('tk-d', 1, 1, 31)">▲</button>
+                <input type="number" class="val-input" id="tk-d" value="01">
+                <button class="arrow-btn" onclick="adjustPicker('tk-d', -1, 1, 31)">▼</button>
+                <div style="font-size:0.7rem;">日</div>
+            </div>
+            <div style="width:10px;"></div>
+            <div class="arrow-picker">
+                <button class="arrow-btn" onclick="adjustPicker('tk-h', 1, 0, 23)">▲</button>
+                <input type="number" class="val-input" id="tk-h" value="08">
+                <button class="arrow-btn" onclick="adjustPicker('tk-h', -1, 0, 23)">▼</button>
+                <div style="font-size:0.7rem;">時</div>
+            </div>
+            <div class="arrow-picker">
+                <button class="arrow-btn" onclick="adjustPicker('tk-m', 1, 0, 59)">▲</button>
+                <input type="number" class="val-input" id="tk-m" value="00">
+                <button class="arrow-btn" onclick="adjustPicker('tk-m', -1, 0, 59)">▼</button>
+                <div style="font-size:0.7rem;">分</div>
+            </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:20px;">
+            <button style="padding:12px; background:var(--accent); color:white; border:none; border-radius:10px;" onclick="syncTime()">與裝置時間同步</button>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <button style="padding:12px; background:#334155; color:white; border:none; border-radius:10px;" onclick="closeModal()">取消</button>
+                <button style="padding:12px; background:var(--success); color:white; border:none; border-radius:10px;" onclick="saveTime()">套用</button>
+            </div>
+        </div>
+    </div></div>
+
+    <script>
+        let state = { total:45, present:45, absent:[], schedules:[], offset:0, cMo:null, cD:null };
+        
+        function saveState() {
+            localStorage.setItem('examApp_state', JSON.stringify({
+                total: state.total,
+                present: state.present,
+                absent: state.absent,
+                schedules: state.schedules
+            }));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('examApp_state');
+            if (saved) {
+                const data = JSON.parse(saved);
+                state.total = data.total ?? 45;
+                state.present = data.present ?? 45;
+                state.absent = data.absent ?? [];
+                state.schedules = data.schedules ?? [];
+            }
+        }
+
+        function showAlert(msg) {
+            const el = document.getElementById('error-overlay');
+            el.innerText = msg; el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 3000);
+        }
+
+        /* 修改：新增連動邏輯 */
+        function adjustPicker(id, step, min, max) {
+            const el = document.getElementById(id);
+            let val = parseInt(el.value) + step;
+            if (val > max) val = min; if (val < min) val = max;
+            el.value = val.toString().padStart(2, '0');
+
+            // 規則1：調整開始小時，結束小時同步動
+            if (id === 'ex-st-h') {
+                const endHEl = document.getElementById('ex-et-h');
+                let endHVal = parseInt(endHEl.value) + step;
+                if (endHVal > 23) endHVal = 0; if (endHVal < 0) endHVal = 23;
+                endHEl.value = endHVal.toString().padStart(2, '0');
+            }
+        }
+
+        function setPickerVal(id, val) {
+            const el = document.getElementById(id); if(el) el.value = val.toString().padStart(2, '0');
+        }
+
+        function getPickerVal(id) { return parseInt(document.getElementById(id).value); }
+
+        function initClockFace() {
+            const clock = document.getElementById('analog-clock');
+            if(!clock) return;
+            clock.innerHTML = "";
+            for(let i=0; i<60; i++) {
+                const container = document.createElement('div');
+                container.className = 'mark-container';
+                container.style.transform = `rotate(${i * 6}deg)`;
+                const line = document.createElement('div');
+                line.className = 'mark-line';
+                const isHour = i % 5 === 0;
+                line.style.width = isHour ? '6px' : '3px';
+                line.style.height = isHour ? '14px' : '8px';
+                line.style.backgroundColor = isHour ? 'var(--hour-mark)' : 'var(--min-mark)';
+                container.appendChild(line); clock.appendChild(container);
+            }
+            const hands = [['h-hand', '25%', '#1e293b', 10], ['m-hand', '38%', '#334155', 7], ['s-hand', '42%', '#ef4444', 4]];
+            hands.forEach(h => {
+                const el = document.createElement('div');
+                el.id = h[0]; el.className = 'hand';
+                el.style.width = h[3] + 'px'; el.style.height = h[1];
+                el.style.backgroundColor = h[2]; clock.appendChild(el);
+            });
+            const nut = document.createElement('div');
+            nut.className = 'center-nut'; nut.style.width = '14px'; nut.style.height = '14px';
+            clock.appendChild(nut);
+        }
+
+        function getNow() {
+            let d = new Date(Date.now() + state.offset);
+            if(state.cMo) { d.setMonth(state.cMo-1); d.setDate(state.cD); }
+            return d;
+        }
+
+        function updateTick() {
+            const n = getNow();
+            const h = n.getHours(), m = n.getMinutes(), s = n.getSeconds();
+            document.getElementById('digital-clock').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+            document.getElementById('date-display').innerText = `${n.getMonth()+1}月${n.getDate()}日`;
+            document.getElementById('day-display').innerText = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'][n.getDay()];
+            
+            const sh = document.getElementById('s-hand'), mh = document.getElementById('m-hand'), hh = document.getElementById('h-hand');
+            if(sh) sh.style.transform = `translateX(-50%) rotate(${s*6}deg)`;
+            if(mh) mh.style.transform = `translateX(-50%) rotate(${m*6 + s*0.1}deg)`;
+            if(hh) hh.style.transform = `translateX(-50%) rotate(${(h%12)*30 + m*0.5}deg)`;
+            
+            updateStatus(n);
+        }
+
+        function updateStatus(n) {
+            const curTimeStr = n.getHours().toString().padStart(2,'0')+":"+n.getMinutes().toString().padStart(2,'0');
+            const nowSec = n.getHours()*3600 + n.getMinutes()*60 + n.getSeconds();
+            
+            const active = state.schedules.find(s => curTimeStr >= s.st && curTimeStr < s.et);
+            const examMode = document.getElementById('exam-mode');
+            const gapMode = document.getElementById('gap-mode');
+
+            // 每次更新狀態都重新渲染一次考程列表，以確保視覺狀態同步
+            renderSchedules();
+
+            if(active) {
+                examMode.style.display = "block"; gapMode.style.display = "none";
+                document.getElementById('subject-now').innerText = active.sub;
+                
+                const [sh, sm] = active.st.split(':').map(Number);
+                const [eh, em] = active.et.split(':').map(Number);
+                const duration = (eh * 60 + em) - (sh * 60 + sm);
+                
+                document.getElementById('range-now').innerText = `${active.st} 至 ${active.et} （共 ${duration} 分）`;
+            } else {
+                const upcoming = state.schedules.map(s=>({...s, sSec:parseInt(s.st.split(':')[0])*3600+parseInt(s.st.split(':')[1])*60}))
+                    .filter(s=>s.sSec > nowSec).sort((a,b)=>a.sSec-b.sSec);
+                const next = upcoming[0];
+
+                if(next) {
+                    const diff = next.sSec - nowSec;
+                    const mm = Math.floor(diff/60); const ss = diff%60;
+                    
+                    if (diff <= 300) {
+                        examMode.style.display = "none"; gapMode.style.display = "block";
+                        document.getElementById('gap-countdown').innerText = `倒數 ${mm} 分 ${ss} 秒 即將考 ${next.sub}`;
+                    } else {
+                        examMode.style.display = "block"; gapMode.style.display = "none";
+                        document.getElementById('subject-now').innerHTML = "請安靜自習";
+                        document.getElementById('range-now').innerHTML = `倒數 <span style="color:#f59e0b; font-weight:900;">${mm}</span> 分 進行 <span style="color:#f59e0b; font-weight:900;">${next.sub}</span> 考試`;
+                    }
+                } else {
+                    examMode.style.display = "block"; gapMode.style.display = "none";
+                    document.getElementById('subject-now').innerText = "請安靜自習";
+                    document.getElementById('range-now').innerText = "今日考程已結束";
+                }
+            }
+        }
+
+        window.adjustCount = (t, v) => { 
+            if(t==='total') { state.total = Math.max(0, state.total + v); state.present = state.total; }
+            else { state.present = Math.max(0, Math.min(state.total, state.present + v)); }
+            renderAttendance(); 
+            saveState();
+        };
+
+        function renderAttendance() {
+            document.getElementById('total-val').innerText = state.total;
+            document.getElementById('present-val').innerText = state.present;
+            document.getElementById('absent-count-label').innerText = state.total - state.present;
+            document.getElementById('absent-list').innerHTML = state.absent.map((x,i)=>`<span style="background:rgba(239,68,68,0.2); padding:4px 10px; border-radius:6px; font-size:0.8rem; cursor:pointer;" onclick="state.absent.splice(${i},1);renderAttendance();saveState();">${x} ✕</span>`).join('');
+        }
+
+        window.submitAbsent = () => { 
+            const v = document.getElementById('input-absent').value; 
+            if(v) state.absent.push(...v.split(/[\s,，]/).filter(x=>x)); 
+            document.getElementById('input-absent').value=''; closeModal(); renderAttendance(); 
+            saveState();
+        };
+
+        window.setSub = (s) => document.getElementById('input-sub').value = s;
+
+        window.openExamModal = (editId = null) => {
+            const subInput = document.getElementById('input-sub');
+            const editHidden = document.getElementById('edit-exam-id');
+            if (editId) {
+                const item = state.schedules.find(s => s.id === editId);
+                subInput.value = item.sub; editHidden.value = editId;
+                setPickerVal('ex-st-h', item.st.split(':')[0]); setPickerVal('ex-st-m', item.st.split(':')[1]);
+                setPickerVal('ex-et-h', item.et.split(':')[0]); setPickerVal('ex-et-m', item.et.split(':')[1]);
+            } else {
+                subInput.value = ""; editHidden.value = "";
+                const n = getNow(); setPickerVal('ex-st-h', n.getHours()); setPickerVal('ex-st-m', Math.ceil(n.getMinutes()/5)*5);
+                setPickerVal('ex-et-h', n.getHours()+1); setPickerVal('ex-et-m', Math.ceil(n.getMinutes()/5)*5);
+            }
+            openModal('exam');
+        };
+
+        window.submitExam = () => {
+            const sub = document.getElementById('input-sub').value.trim(); 
+            const editId = document.getElementById('edit-exam-id').value;
+            const sh = getPickerVal('ex-st-h'), sm = getPickerVal('ex-st-m'), eh = getPickerVal('ex-et-h'), em = getPickerVal('ex-et-m');
+            
+            if(!sub) { showAlert("請輸入或選擇考試科目！"); return; }
+
+            const st = `${sh.toString().padStart(2,'0')}:${sm.toString().padStart(2,'0')}`;
+            const et = `${eh.toString().padStart(2,'0')}:${em.toString().padStart(2,'0')}`;
+            
+            if (editId) {
+                const idx = state.schedules.findIndex(s => s.id == editId);
+                if (idx !== -1) state.schedules[idx] = { ...state.schedules[idx], sub, st, et };
+            } else {
+                state.schedules.push({ id: Date.now(), sub, st, et });
+            }
+            closeModal(); renderSchedules();
+            saveState();
+        };
+
+        /* 修改：今日考程渲染邏輯，加入時間狀態呈現 */
+        function renderSchedules() {
+            const n = getNow();
+            const curTimeStr = n.getHours().toString().padStart(2,'0')+":"+n.getMinutes().toString().padStart(2,'0');
+
+            document.getElementById('schedule-list').innerHTML = state.schedules.sort((a,b)=>a.st.localeCompare(b.st)).map(s=> {
+                let statusClass = "";
+                let statusIcon = "📅";
+                
+                if (curTimeStr >= s.st && curTimeStr < s.et) {
+                    statusClass = "active-exam-card";
+                    statusIcon = "✍️";
+                } else if (curTimeStr >= s.et) {
+                    statusClass = "past-exam-card";
+                    statusIcon = "✅";
+                }
+
+                return `
+                    <div class="schedule-card ${statusClass}">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <span style="font-size: 1.1rem;">${statusIcon}</span>
+                            <div style="display:flex; flex-direction:column;">
+                                <span class="sub-name">${s.sub}</span>
+                                <span class="sub-time">${s.st} — ${s.et}</span>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:12px; align-items: center;">
+                            <div style="color:var(--accent); cursor:pointer; font-size: 1.2rem;" onclick="openExamModal(${s.id})">✎</div>
+                            <div style="color:var(--danger); cursor:pointer; font-size: 1.2rem;" onclick="state.schedules=state.schedules.filter(x=>x.id!=${s.id});renderSchedules();saveState();">✕</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.openModal = (id) => {
+            const m = document.getElementById('modal-'+id);
+            if(m) { m.style.display='flex'; m.scrollTop = 0; }
+        }
+        window.closeModal = () => document.querySelectorAll('.modal').forEach(m=>m.style.display='none');
+        window.openTimeModal = () => {
+            const n = getNow(); setPickerVal('tk-mo', n.getMonth()+1); setPickerVal('tk-d', n.getDate());
+            setPickerVal('tk-h', n.getHours()); setPickerVal('tk-m', n.getMinutes()); openModal('time');
+        };
+        window.saveTime = () => { 
+            state.cMo = getPickerVal('tk-mo'); state.cD = getPickerVal('tk-d'); 
+            const t = new Date(); t.setHours(getPickerVal('tk-h'), getPickerVal('tk-m'), 0, 0); 
+            state.offset = t.getTime() - Date.now(); closeModal(); updateTick(); 
+        };
+        window.syncTime = () => { state.offset=0; state.cMo=null; state.cD=null; closeModal(); updateTick(); };
+
+        window.onload = () => {
+            loadState(); 
+            initClockFace(); 
+            setInterval(updateTick, 1000); 
+            updateTick(); 
+            renderAttendance(); 
+            renderSchedules();
+            window.addEventListener('resize', initClockFace); 
+        };
+    </script>
+</body>
+</html>
