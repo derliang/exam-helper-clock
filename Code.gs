@@ -1,0 +1,1 @@
+到derliang@gmail.com的github，為這個程式開一個公開專案，我要能透過github執行這個程式，並push
