@@ -1,1 +1,9 @@
-到derliang@gmail.com的github，為這個程式開一個公開專案，我要能透過github執行這個程式，並push
+/**
+ * 處理 GET 請求，回傳指定的 HTML 檔案
+ */
+function doGet() {
+  return HtmlService.createHtmlOutputFromFile('index')
+    .setTitle('段考小幫手_時鐘置頂')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL) // 允許在 Iframe 中運行
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
