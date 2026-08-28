@@ -1,568 +1,125 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>段考小幫手</title>
-    <style>
-        :root {
-            --bg-dark: #030712;
-            --panel-bg: rgba(15, 23, 42, 0.96);
-            --accent: #38bdf8;
-            --text-main: #f8fafc;
-            --text-dim: #cbd5e1;
-            --danger: #ef4444;
-            --success: #22c55e;
-            --warning: #f59e0b;
-            --hero-bg: rgba(0, 0, 0, 0.7);
-            --clock-face: #ffffff;
-            --clock-border: #e2e8f0;
-            --hour-mark: #1e293b;
-            --min-mark: #94a3b8;
-        }
-
-        @keyframes breathe {
-            0%, 100% { opacity: 1; text-shadow: 0 0 30px rgba(245, 158, 11, 0.8); transform: scale(1.02); }
-            50% { opacity: 0.5; text-shadow: 0 0 10px rgba(245, 158, 11, 0.2); transform: scale(1); }
-        }
-        .breathe-animation { animation: breathe 3s ease-in-out infinite; }
-
-        @keyframes border-glow {
-            0%, 100% { border-color: var(--accent); box-shadow: 0 0 5px var(--accent); }
-            50% { border-color: #fff; box-shadow: 0 0 15px var(--accent); }
-        }
-        .active-exam-card { 
-            border: 2px solid var(--accent) !important; 
-            background: rgba(99, 102, 241, 0.2) !important;
-            animation: border-glow 2s infinite;
-        }
-        .past-exam-card { opacity: 0.4; filter: grayscale(0.5); }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
-        body {
-            font-family: -apple-system, "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
-            background: radial-gradient(circle at top right, #0c4a6e, #030712 52%);
-            color: var(--text-main);
-            height: 100vh; width: 100vw; overflow: hidden; display: flex; padding: 1.5vh; 
-        }
-
-        .main-layout { display: grid; grid-template-columns: 320px 1fr; gap: 2vh; width: 100%; height: 100%; }
-        .glass-panel {
-            background: var(--panel-bg); backdrop-filter: blur(20px);
-            border: 1px solid #475569; border-radius: 1.5rem;
-            padding: 2vh; display: flex; flex-direction: column; overflow: hidden;
-        }
-        .left-col { display: flex; flex-direction: column; gap: 1.5vh; }
-
-        .info-header {
-            flex: 0 0 auto; cursor: pointer; padding: 2vh;
-            border-left: 8px solid var(--accent); background: rgba(99, 102, 241, 0.15);
-            position: relative; transition: all 0.3s ease;
-            text-align: center;
-        }
-        #date-display { font-size: 2.8rem; font-weight: 800; line-height: 1.2; }
-        #day-display { font-size: 1.8rem; color: var(--accent); font-weight: 600; }
-
-        .attendance-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1vh; }
-        .count-card { background: rgba(0, 0, 0, 0.4); padding: 1vh; border-radius: 1.2rem; text-align: center; }
-        .counter-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 5px; }
-        .side-btn { background: #334155; color: white; border: none; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 1rem; }
-
-        .panel-title { font-size: 1.1rem !important; font-weight: 900 !important; margin-bottom: 5px; }
-
-        .scroll-area { flex: 1; overflow-y: auto; margin-top: 1vh; padding-right: 5px; }
-        .scroll-area::-webkit-scrollbar { width: 4px; }
-        .scroll-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
-
-        .right-col { display: flex; flex-direction: column; gap: 0; align-items: center; justify-content: flex-start; }
-        
-        .status-hero {
-            text-align: center; width: 100%; padding: 2vh 2vw;
-            background: var(--hero-bg); border-radius: 2rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            flex: 0 0 auto; z-index: 5; min-height: 30vh;
-            margin-top: 1vh; 
-        }
-        .big-subject { font-size: clamp(3.5rem, 9vh, 8rem); font-weight: 900; letter-spacing: 0.6rem; margin-bottom: 1.5vh; line-height: 1.1; text-align: center; width: 100%; }
-        .time-range-text { 
-            font-size: clamp(2rem, 5.5vh, 4rem); font-family: 'Courier New', monospace; 
-            font-weight: 800; background: rgba(255, 255, 255, 0.05);
-            padding: 1.5vh 3vw; border-radius: 1.5rem; white-space: nowrap; 
-            text-align: center; width: auto;
-        }
-
-        .prep-title { color: var(--warning); font-size: clamp(3.5rem, 8vh, 6.5rem); font-weight: 900; margin-bottom: 1vh; }
-        .countdown-line { font-size: clamp(1.8rem, 4vh, 3rem); font-weight: 700; margin-bottom: 1.5vh; }
-        .todo-box { background: var(--danger); color: white; padding: 1vh 2.5vw; border-radius: 1rem; font-size: clamp(1.2rem, 2.5vh, 1.8rem); font-weight: 800; }
-
-        .clocks-row {
-            display: flex; flex-direction: row; align-items: center; justify-content: center;
-            width: 100%; gap: 2vw; flex: 0 0 auto; 
-            margin-top: 0; 
-        }
-
-        .clock-container {
-            width: 42vh; height: 42vh;
-            display: flex; align-items: center; justify-content: center; position: relative;
-        }
-
-        .analog-clock { 
-            height: 100%; width: 100%;
-            border: 8px solid var(--clock-border); border-radius: 50%; 
-            position: relative; background: var(--clock-face);
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.1), 0 10px 30px rgba(0,0,0,0.3); 
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .digital-clock { 
-            font-size: clamp(3.5rem, 14vh, 16vh); 
-            font-family: 'Courier New', monospace; 
-            font-weight: 900; 
-            text-shadow: 0 0 20px rgba(99, 102, 241, 0.6);
-            white-space: nowrap;
-        }
-
-        .mark-container { position: absolute; inset: 0; display: flex; justify-content: center; align-items: flex-start; }
-        .mark-line { border-radius: 1px; }
-
-        .hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom center; transform: translateX(-50%); border-radius: 10px; }
-        .center-nut { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; background: #1e293b; z-index: 10; }
-
-        .arrow-picker { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .arrow-btn { background: #334155; color: white; border: none; width: 40px; height: 30px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; transition: background 0.2s; }
-        .arrow-btn:hover { background: var(--accent); }
-        .picker-group { display: flex; align-items: center; justify-content: center; gap: 8px; }
-        
-        .val-input { 
-            background: #0f172a; border: 1px solid #475569; border-radius: 8px; 
-            width: 65px; height: 50px; text-align: center; 
-            font-size: 1.6rem; font-weight: bold; font-family: 'Courier New', monospace; 
-            color: white; user-select: text;
-        }
-        .val-input::-webkit-outer-spin-button,
-        .val-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .val-input[type=number] { -moz-appearance: textfield; }
-
-        .subject-shortcuts { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; }
-        .subject-btn { background: #334155; color: white; border: 1px solid #475569; padding: 6px 0; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
-        
-        .modal { 
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); 
-            display: none; justify-content: center; align-items: flex-start; 
-            z-index: 100; padding-top: 2vh; padding-left: 15px; padding-right: 15px;
-            overflow-y: auto;
-        }
-        .modal-content {
-            background: #1e293b; padding: 1.5rem; border-radius: 1.2rem; 
-            width: 100%; max-width: 900px; box-shadow: 0 20px 60px rgba(0,0,0,0.7);
-            border: 1px solid #475569; position: relative;
-            margin-bottom: 2vh;
-        }
-        .day-tabs { display:flex; gap:6px; overflow-x:auto; margin-bottom:8px; }
-        .day-tab { background:#172033; color:#cbd5e1; border:1px solid #475569; padding:7px 10px; border-radius:999px; cursor:pointer; white-space:nowrap; }
-        .day-tab.active { background:var(--accent); color:#001018; border-color:#bae6fd; font-weight:900; }
-        .add-exam-btn { background:var(--accent); color:#001018; border:1px solid #bae6fd; border-radius:8px; padding:8px 12px; font-weight:900; cursor:pointer; }
-        .exam-date { width:100%; padding:10px; margin-bottom:14px; background:#020617; color:white; border:1px solid #64748b; border-radius:8px; color-scheme:dark; }
-        .add-subject-row { display:grid; grid-template-columns:1fr auto; gap:8px; margin:10px 0 16px; }
-        .add-subject-row input, .time-input { padding:10px; background:#020617; color:white; border:1px solid #64748b; border-radius:8px; }
-        .time-input { width:100%; color-scheme:dark; font-size:1.2rem; }
-        .duration-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
-        .duration-btn { background:#1e293b; color:white; border:1px solid #64748b; border-radius:8px; padding:9px 14px; cursor:pointer; font-weight:800; }
-        .subject-btn.selected { background:var(--accent); color:#001018; border-color:#bae6fd; }
-        .clock-widget { position:fixed; z-index:50; min-width:180px; min-height:130px; resize:both; overflow:hidden; background:#0f172a; border:2px solid #64748b; border-radius:16px; box-shadow:0 18px 50px rgba(0,0,0,.55); touch-action:none; }
-        .clock-widget.hidden { display:none; }
-        .widget-bar { height:34px; padding:0 8px 0 12px; display:flex; align-items:center; justify-content:space-between; background:#1e293b; color:#cbd5e1; cursor:move; user-select:none; font-size:.75rem; }
-        .widget-close { width:25px; height:25px; background:#7f1d1d; color:white; border:1px solid var(--danger); border-radius:7px; cursor:pointer; }
-        .widget-body { height:calc(100% - 34px); display:flex; align-items:center; justify-content:center; padding:8px; }
-        #analog-widget { left:38%; top:20px; width:330px; height:360px; }
-        #digital-widget { right:25px; top:45px; width:430px; height:170px; }
-        .widget-restore { position:fixed; right:12px; bottom:12px; z-index:40; display:flex; gap:6px; }
-        .widget-restore button { background:#0ea5e9; color:#001018; border:1px solid #bae6fd; border-radius:8px; padding:8px 10px; font-weight:900; }
-        .modal-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem; color: var(--accent); text-align: center; }
-
-        .schedule-card {
-            background: rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 10px 14px; margin-bottom: 6px;
-            display: flex; align-items: center; justify-content: space-between;
-            border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease;
-        }
-        .schedule-card .sub-name { font-size: 1.15rem; font-weight: 800; color: #fff; }
-        .schedule-card .sub-time { font-size: 1.3rem; font-family: 'Courier New', monospace; font-weight: 800; color: #fff; }
-        
-        #error-overlay { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--danger); color: white; padding: 12px 24px; border-radius: 10px; z-index: 1000; font-weight: bold; display: none; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.5); }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>段考小幫手</title>
+  <style>
+    :root{color-scheme:dark;--bg:#030712;--panel:#0f172a;--panel2:#172033;--line:#475569;--text:#f8fafc;--muted:#cbd5e1;--blue:#38bdf8;--green:#4ade80;--yellow:#fbbf24;--orange:#fb923c;--red:#fb7185}
+    *{box-sizing:border-box}html,body{margin:0;width:100%;min-height:100%;font-family:Inter,"Noto Sans TC","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--text)}button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+    body{background:radial-gradient(circle at 80% -20%,#0c4a6e 0,transparent 40rem),var(--bg)}
+    .screen{min-height:100vh;padding:1.25vh;display:grid;grid-template-rows:minmax(0,68vh) minmax(0,29vh);gap:1.25vh}
+    .hero{display:grid;grid-template-columns:40% 60%;gap:1.25vh;min-height:0}.card{background:rgba(15,23,42,.96);border:1px solid var(--line);border-radius:2.2vh;box-shadow:0 16px 50px #0008}
+    .clock-card{position:relative;display:flex;align-items:center;justify-content:center;min-height:0;padding:2vh}.clock-wrap{position:relative;width:min(35vw,62vh);aspect-ratio:1}.clock-svg{width:100%;height:100%;display:block;transform:rotate(-90deg)}.ring-track{fill:#f8fafc;stroke:#243247;stroke-width:8}.ring-progress{fill:none;stroke:var(--green);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset .5s linear,stroke .25s}.clock-face{position:absolute;inset:9%;border:7px solid #dbeafe;border-radius:50%;background:#f8fafc;box-shadow:inset 0 0 28px #0f172a33}.tick{position:absolute;left:50%;top:3%;width:3px;height:3.5%;background:#64748b;transform-origin:50% 1340%;border-radius:3px}.tick.hour{width:6px;height:6%;background:#0f172a;transform-origin:50% 785%}.hand{position:absolute;left:50%;bottom:50%;transform-origin:bottom center;border-radius:99px}.hour-hand{height:27%;width:10px;background:#0f172a}.minute-hand{height:38%;width:7px;background:#334155}.second-hand{height:41%;width:3px;background:#e11d48}.pin{position:absolute;left:50%;top:50%;width:18px;height:18px;border-radius:50%;background:#0f172a;transform:translate(-50%,-50%)}
+    .clock-caption{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);text-align:center;color:#0f172a;font-weight:950}.clock-caption strong{display:block;font:950 clamp(1.5rem,3vw,3.2rem)/1 ui-monospace,Consolas,monospace}.clock-caption span{font-size:clamp(.8rem,1.2vw,1.2rem)}
+    .info-card{padding:3.5vh 3vw;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-width:0}.state-label{padding:.7vh 1.1vw;border:1px solid currentColor;border-radius:999px;color:var(--blue);font-weight:950;font-size:clamp(1rem,1.7vw,1.6rem)}.subject-now{margin:1.7vh 0 .7vh;font-size:clamp(3.5rem,8vw,8rem);line-height:1;font-weight:1000;letter-spacing:.08em;max-width:100%;overflow-wrap:anywhere}.time-range{font:900 clamp(1.5rem,3vw,3rem)/1.2 ui-monospace,Consolas,monospace;color:#e0f2fe}.countdown{margin-top:1.5vh;font-size:clamp(1.6rem,3.8vw,4rem);font-weight:950;color:var(--yellow)}.message{margin-top:1.4vh;font-size:clamp(1rem,1.7vw,1.65rem);font-weight:800;color:var(--muted);white-space:pre-line}.phase-exam .state-label{color:var(--green)}.phase-prepare .state-label,.phase-soon .state-label{color:var(--yellow)}.phase-final .state-label{color:var(--red)}
+    .lower{display:grid;grid-template-columns:1.35fr .75fr 1fr;gap:1.25vh;min-height:0}.lower .card{padding:1.7vh 1.25vw;overflow:hidden}.section-title{display:flex;align-items:center;justify-content:space-between;margin:0 0 1vh;font-size:clamp(1rem,1.5vw,1.5rem)}.schedule-list{display:flex;flex-direction:column;gap:.65vh;overflow:auto;max-height:21vh}.schedule-item{display:grid;grid-template-columns:auto 1fr auto;gap:1vw;align-items:center;padding:.75vh .8vw;border:1px solid #334155;border-radius:1vh;background:#111c30;font-size:clamp(.82rem,1.15vw,1.12rem)}.schedule-item.active{border:2px solid var(--green);background:#123020}.schedule-item.next{border-color:var(--yellow)}.schedule-item.done{opacity:.5}.schedule-item time{font-family:ui-monospace,Consolas,monospace;font-weight:900}.schedule-item strong{font-size:1.1em}.tag{border-radius:999px;padding:.3vh .55vw;border:1px solid currentColor;font-size:.8em}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.7vw}.stat{text-align:center;padding:1.2vh .3vw;background:#111c30;border:1px solid #334155;border-radius:1.2vh}.stat span{display:block;color:var(--muted);font-weight:800}.stat strong{font-size:clamp(1.8rem,3vw,3rem)}.absent-display{margin-top:1.2vh;color:#fecdd3;font-size:clamp(.85rem,1.1vw,1.1rem);font-weight:800;max-height:8vh;overflow:auto}.bottom-actions{position:fixed;right:12px;bottom:10px;z-index:20;display:flex;gap:7px;opacity:.3;transition:.2s}.bottom-actions:hover{opacity:1}.btn{border:1px solid #64748b;border-radius:10px;padding:9px 13px;background:#1e293b;color:white;font-weight:850}.btn.primary{background:#0284c7;border-color:#7dd3fc}.btn.danger{background:#881337;border-color:var(--red)}.btn.success{background:#166534;border-color:var(--green)}
+    .modal{position:fixed;inset:0;z-index:100;background:#000d;display:none;align-items:flex-start;justify-content:center;padding:2vh;overflow:auto}.modal.open{display:flex}.settings{width:min(1180px,100%);min-height:94vh;background:#08101f;border:1px solid #64748b;border-radius:20px;box-shadow:0 22px 70px #000;padding:22px}.settings-head{display:flex;justify-content:space-between;align-items:center;gap:15px}.settings-head h1{margin:0;font-size:1.6rem}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:18px 0}.tab-btn.active{background:var(--blue);color:#001018}.tab-page{display:none}.tab-page.active{display:block}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.setting-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}.setting-card h2,.setting-card h3{margin-top:0}.field{display:block;margin-bottom:12px}.field span{display:block;margin-bottom:6px;color:var(--muted);font-weight:800}.input{width:100%;padding:10px 12px;background:#020617;color:white;border:1px solid #64748b;border-radius:9px;color-scheme:dark}.roster-input{min-height:245px;resize:vertical}.student-grid,.subject-grid,.duration-grid{display:flex;flex-wrap:wrap;gap:8px}.chip{border:1px solid #64748b;border-radius:9px;padding:9px 11px;background:#172033;color:white;font-weight:800}.chip.active{background:#9f1239;border-color:var(--red)}.chip.selected{background:#0284c7;border-color:#7dd3fc}.chip.used{opacity:.46;cursor:not-allowed;text-decoration:line-through}.form-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:14px}.admin-schedule{display:grid;grid-template-columns:110px 1fr 135px 135px auto;gap:8px;align-items:center;padding:9px;border-bottom:1px solid #334155}.notice{padding:10px;border:1px solid var(--yellow);background:#713f1233;border-radius:9px;color:#fde68a}.save-status{color:var(--green);font-weight:800}.empty{text-align:center;color:var(--muted);padding:22px}.error{color:#fecdd3;background:#88133755;border:1px solid var(--red);border-radius:9px;padding:9px;margin-top:10px}
+    @media(max-width:900px){.screen{grid-template-rows:auto auto}.hero{grid-template-columns:1fr}.lower{grid-template-columns:1fr}.clock-wrap{width:min(78vw,55vh)}.grid2{grid-template-columns:1fr}.admin-schedule{grid-template-columns:1fr 1fr}.admin-schedule>*:last-child{grid-column:1/-1}.lower .card{min-height:180px}.bottom-actions{opacity:.8}}
+  </style>
 </head>
 <body>
-
-    <div id="error-overlay"></div>
-
-    <div class="main-layout">
-        <div class="left-col">
-            <div class="glass-panel info-header" onclick="openTimeModal()">
-                <div id="date-display">--月--日</div>
-                <div id="day-display">星期-</div>
-                <div style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; opacity: 0.5;">⚙</div>
-            </div>
-
-            <div class="attendance-grid">
-                <div class="count-card">
-                    <p class="panel-title" style="color: var(--text-dim);">應到</p>
-                    <div class="counter-row">
-                        <button class="side-btn" onclick="adjustCount('total', 1)">+</button>
-                        <span id="total-val" style="font-size: 1.3rem; font-weight: 800;">45</span>
-                        <button class="side-btn" onclick="adjustCount('total', -1)">-</button>
-                    </div>
-                </div>
-                <div class="count-card">
-                    <p class="panel-title" style="color: var(--text-dim);">實到</p>
-                    <div class="counter-row">
-                        <button class="side-btn" onclick="adjustCount('present', 1)">+</button>
-                        <span id="present-val" style="font-size: 1.3rem; font-weight: 800; color: var(--success);">45</span>
-                        <button class="side-btn" onclick="adjustCount('present', -1)">-</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass-panel" style="flex: 0 0 auto; max-height: 120px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 5px;">
-                    <h3 class="panel-title" style="color: var(--danger);">缺席名單(<span id="absent-count-label">0</span>)</h3>
-                    <button onclick="openModal('absent')" style="background:none; border:none; color:white; cursor:pointer; font-size:1.3rem;">+</button>
-                </div>
-                <div id="absent-list" class="scroll-area" style="display:flex; flex-wrap:wrap; gap:5px;"></div>
-            </div>
-
-            <div class="glass-panel" style="flex: 1;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 5px;">
-                    <h3 class="panel-title">考程</h3>
-                    <button class="add-exam-btn" onclick="openExamModal()">＋ 新增考程</button>
-                </div>
-                <div id="day-tabs" class="day-tabs"></div>
-                <div id="schedule-list" class="scroll-area"></div>
-            </div>
+  <script id="embedded-config" type="application/json">{"id":"default","students":[],"absentIds":[],"subjects":["國文","中文作文","英文","英聽","數學","歷史","地理","公民","物理","化學","生物","地科","理化"],"schedules":[],"settings":{"reminder10":10,"reminder5":5,"reminder1":1,"prepText":"清空桌面\n準備文具及答案卡\n保持安靜","timeOffset":0}}</script>
+  <main class="screen">
+    <section class="hero">
+      <div class="card clock-card">
+        <div class="clock-wrap">
+          <svg class="clock-svg" viewBox="0 0 200 200" aria-hidden="true"><circle class="ring-track" cx="100" cy="100" r="92"/><circle id="progress-ring" class="ring-progress" cx="100" cy="100" r="92" pathLength="100" stroke-dasharray="100" stroke-dashoffset="0"/></svg>
+          <div id="clock-face" class="clock-face"><div id="hour-hand" class="hand hour-hand"></div><div id="minute-hand" class="hand minute-hand"></div><div id="second-hand" class="hand second-hand"></div><div class="pin"></div><div class="clock-caption"><strong id="digital-time">00:00:00</strong><span id="ring-label">現在時間</span></div></div>
         </div>
+      </div>
+      <div id="info-card" class="card info-card"><div id="state-label" class="state-label">載入中</div><div id="subject-now" class="subject-now">段考小幫手</div><div id="time-range" class="time-range"></div><div id="countdown" class="countdown"></div><div id="message" class="message"></div></div>
+    </section>
+    <section class="lower">
+      <div class="card"><h2 class="section-title"><span>今日考程</span><small id="today-date"></small></h2><div id="today-schedule" class="schedule-list"></div></div>
+      <div class="card"><h2 class="section-title">出缺席</h2><div class="stats"><div class="stat"><span>應到</span><strong id="total-count">0</strong></div><div class="stat"><span>實到</span><strong id="present-count">0</strong></div><div class="stat"><span>缺席</span><strong id="absent-count">0</strong></div></div></div>
+      <div class="card"><h2 class="section-title">缺席名單</h2><div id="absent-display" class="absent-display">目前無缺席資料</div></div>
+    </section>
+  </main>
+  <div class="bottom-actions"><button class="btn" onclick="toggleFullscreen()">全螢幕</button><button class="btn primary" onclick="openSettings()">老師設定</button></div>
 
-        <div class="right-col">
-            <div id="status-box" class="status-hero">
-                <div id="exam-mode">
-                    <div id="subject-now" class="big-subject">請安靜自習</div>
-                    <div id="range-now" class="time-range-text">至 --:--</div>
-                </div>
-                <div id="gap-mode" style="display: none;">
-                    <div class="prep-title breathe-animation">請準備</div>
-                    <div id="gap-countdown" class="countdown-line">倒數--分--秒 即將考 XX科</div>
-                    <div class="todo-box">座位清空、檢查文具、喝水上廁所</div>
-                </div>
-            </div>
+  <div id="settings-modal" class="modal" role="dialog" aria-modal="true">
+    <div class="settings">
+      <div class="settings-head"><div><h1>老師設定後台</h1><div id="save-status" class="save-status">所有修改會自動儲存在本機</div></div><button class="btn" onclick="closeSettings()">返回展示</button></div>
+      <nav class="tabs"><button class="btn tab-btn active" data-tab="schedule" onclick="showTab('schedule')">考程設定</button><button class="btn tab-btn" data-tab="roster" onclick="showTab('roster')">學生名單</button><button class="btn tab-btn" data-tab="attendance" onclick="showTab('attendance')">出缺席</button><button class="btn tab-btn" data-tab="display" onclick="showTab('display')">提醒與時間</button><button class="btn tab-btn" data-tab="backup" onclick="showTab('backup')">備份與離線</button></nav>
+      <section id="tab-schedule" class="tab-page active">
+        <div class="grid2">
+          <div class="setting-card"><h2 id="exam-form-title">新增考程</h2><input id="edit-id" type="hidden"><label class="field"><span>考程日期</span><input id="exam-date" class="input" type="date"></label><div class="field"><span>考試科目（已排定者不可重複選擇）</span><div id="subject-grid" class="subject-grid"></div></div><label class="field"><span>自訂新增科目</span><div style="display:grid;grid-template-columns:1fr auto;gap:8px"><input id="new-subject" class="input" type="text"><button class="btn" onclick="addSubject()">新增</button></div></label><div class="grid2"><label class="field"><span>開始時間</span><input id="start-time" class="input" type="time" step="300"></label><label class="field"><span>結束時間</span><input id="end-time" class="input" type="time" step="300"></label></div><div class="field"><span>快速設定時長</span><div id="duration-grid" class="duration-grid"></div></div><div id="exam-error" class="error hidden"></div><div class="form-actions"><button class="btn" onclick="resetExamForm()">清除</button><button class="btn primary" onclick="saveExam()">儲存考程</button></div></div>
+          <div class="setting-card"><h2>全部考程</h2><div id="admin-schedules"></div></div>
         </div>
+      </section>
+      <section id="tab-roster" class="tab-page"><div class="grid2"><div class="setting-card"><h2>貼上學生名單</h2><p class="notice">每行一位學生，可貼上「座號 姓名」或從試算表貼上兩欄資料。</p><textarea id="roster-input" class="input roster-input" placeholder="1 王小明&#10;2 李小華"></textarea><div class="form-actions"><button class="btn primary" onclick="parseRoster()">解析並套用名單</button></div><div id="roster-error" class="error hidden"></div></div><div class="setting-card"><h2>解析結果（<span id="roster-count">0</span>人）</h2><div id="roster-preview" class="student-grid"></div></div></div></section>
+      <section id="tab-attendance" class="tab-page"><div class="setting-card"><h2>點選缺席學生</h2><p class="notice">紅色代表缺席；再次點選可取消。</p><div id="attendance-grid" class="student-grid"></div></div></section>
+      <section id="tab-display" class="tab-page"><div class="grid2"><div class="setting-card"><h2>考前提醒</h2><label class="field"><span>第一次提醒（分鐘）</span><input id="reminder10" class="input" type="number" min="1" max="60"></label><label class="field"><span>強提醒（分鐘）</span><input id="reminder5" class="input" type="number" min="1" max="30"></label><label class="field"><span>最後提醒（分鐘）</span><input id="reminder1" class="input" type="number" min="1" max="10"></label><label class="field"><span>準備事項</span><textarea id="prep-text" class="input" rows="5"></textarea></label><button class="btn primary" onclick="saveDisplaySettings()">儲存提醒設定</button></div><div class="setting-card"><h2>顯示時間測試</h2><p class="notice">只調整本程式顯示時間，不會變更電腦系統時間。</p><label class="field"><span>模擬日期與時間</span><input id="mock-datetime" class="input" type="datetime-local"></label><div class="form-actions"><button class="btn" onclick="syncDeviceTime()">恢復裝置時間</button><button class="btn primary" onclick="setMockTime()">套用模擬時間</button></div></div></div></section>
+      <section id="tab-backup" class="tab-page"><div class="grid2"><div class="setting-card"><h2>離線使用</h2><p>下載的單一 HTML 會內嵌目前學生名單、出缺席、考程與提醒設定。複製到沒有網路的電腦後可直接開啟，所有修改功能仍會保留。</p><button class="btn success" onclick="downloadOfflineHtml()">下載已設定的離線 HTML</button></div><div class="setting-card"><h2>設定備份</h2><div class="form-actions" style="justify-content:flex-start"><button class="btn" onclick="exportJson()">匯出設定 JSON</button><label class="btn">匯入設定 JSON<input id="json-file" type="file" accept="application/json" hidden onchange="importJson(this)"></label><button class="btn danger" onclick="restoreEmbedded()">清除本機修改並回復檔案內設定</button></div></div></div></section>
     </div>
+  </div>
 
-    <section id="analog-widget" class="clock-widget"><div class="widget-bar"><span>指針時鐘｜拖曳・右下角縮放</span><button class="widget-close" onclick="hideWidget('analog')">×</button></div><div class="widget-body"><div id="analog-clock" class="analog-clock"></div></div></section>
-    <section id="digital-widget" class="clock-widget"><div class="widget-bar"><span>數字時鐘｜拖曳・右下角縮放</span><button class="widget-close" onclick="hideWidget('digital')">×</button></div><div class="widget-body"><div id="digital-clock" class="digital-clock">00:00</div></div></section>
-    <div class="widget-restore"><button id="show-analog" hidden onclick="showWidget('analog')">顯示指針時鐘</button><button id="show-digital" hidden onclick="showWidget('digital')">顯示數字時鐘</button><button onclick="resetWidgets()">重設時鐘</button></div>
-
-    <!-- Modals -->
-    <div id="modal-absent" class="modal"><div class="modal-content">
-        <div class="modal-title">新增缺席人員</div>
-        <input type="text" id="input-absent" placeholder="請輸入【座號】與【姓名】" style="width:100%; padding:12px; margin-bottom:20px; background:#0f172a; border:1px solid #475569; border-radius:10px; color:white; user-select: text;">
-        <div style="display:flex; gap:10px;"><button style="flex:1; padding:12px; background:#334155; color:white; border:none; border-radius:10px;" onclick="closeModal()">取消</button><button style="flex:1; padding:12px; background:var(--accent); color:white; border:none; border-radius:10px;" onclick="submitAbsent()">確認</button></div>
-    </div></div>
-
-    <div id="modal-exam" class="modal"><div class="modal-content">
-        <div id="exam-modal-title" class="modal-title">新增考程</div>
-        <input type="hidden" id="edit-exam-id">
-        <label>1. 考程日期</label><input type="date" id="exam-date" class="exam-date">
-        <div style="font-weight:900; margin-bottom:8px;">2. 選擇科目</div><div id="subject-shortcuts" class="subject-shortcuts"></div>
-        <div class="add-subject-row"><input type="text" id="new-subject" placeholder="新增科目"><button class="add-exam-btn" onclick="addSubject()">新增科目</button></div>
-        <div style="font-weight:900; margin-bottom:8px;">3. 設定時間</div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;"><label>開始時間<input type="time" id="exam-start" class="time-input" step="300"></label><label>結束時間<input type="time" id="exam-end" class="time-input" step="300"></label></div>
-        <div class="duration-row"><button class="duration-btn" onclick="setDuration(30)">30 分</button><button class="duration-btn" onclick="setDuration(50)">50 分</button><button class="duration-btn" onclick="setDuration(60)">60 分</button><button class="duration-btn" onclick="setDuration(80)">80 分</button></div>
-        <div style="display:flex; gap:10px; margin-top:15px;"><button style="flex:1; padding:10px; background:#334155; color:white; border:none; border-radius:8px;" onclick="closeModal()">取消</button><button style="flex:1; padding:10px; background:var(--accent); color:white; border:none; border-radius:8px;" onclick="submitExam()">儲存考程</button></div>
-    </div></div>
-
-    <div id="modal-time" class="modal"><div class="modal-content">
-        <div class="modal-title">設定現在時間</div>
-        <div class="picker-group">
-            <div class="arrow-picker">
-                <button class="arrow-btn" onclick="adjustPicker('tk-mo', 1, 1, 12)">▲</button>
-                <input type="number" class="val-input" id="tk-mo" value="01">
-                <button class="arrow-btn" onclick="adjustPicker('tk-mo', -1, 1, 12)">▼</button>
-                <div style="font-size:0.7rem;">月</div>
-            </div>
-            <div class="arrow-picker">
-                <button class="arrow-btn" onclick="adjustPicker('tk-d', 1, 1, 31)">▲</button>
-                <input type="number" class="val-input" id="tk-d" value="01">
-                <button class="arrow-btn" onclick="adjustPicker('tk-d', -1, 1, 31)">▼</button>
-                <div style="font-size:0.7rem;">日</div>
-            </div>
-            <div style="width:10px;"></div>
-            <div class="arrow-picker">
-                <button class="arrow-btn" onclick="adjustPicker('tk-h', 1, 0, 23)">▲</button>
-                <input type="number" class="val-input" id="tk-h" value="08">
-                <button class="arrow-btn" onclick="adjustPicker('tk-h', -1, 0, 23)">▼</button>
-                <div style="font-size:0.7rem;">時</div>
-            </div>
-            <div class="arrow-picker">
-                <button class="arrow-btn" onclick="adjustPicker('tk-m', 1, 0, 59)">▲</button>
-                <input type="number" class="val-input" id="tk-m" value="00">
-                <button class="arrow-btn" onclick="adjustPicker('tk-m', -1, 0, 59)">▼</button>
-                <div style="font-size:0.7rem;">分</div>
-            </div>
-        </div>
-        <div style="display:flex; flex-direction:column; gap:8px; margin-top:20px;">
-            <button style="padding:12px; background:var(--accent); color:white; border:none; border-radius:10px;" onclick="syncTime()">與裝置時間同步</button>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <button style="padding:12px; background:#334155; color:white; border:none; border-radius:10px;" onclick="closeModal()">取消</button>
-                <button style="padding:12px; background:var(--success); color:white; border:none; border-radius:10px;" onclick="saveTime()">套用</button>
-            </div>
-        </div>
-    </div></div>
-
-    <script>
-        const defaultSubjects = ['國文','中文作文','英語文','英聽','數學','歷史','地理','公民','物理','化學','生物','理化','地科'];
-        const dateKey = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        let state = { total:45, present:45, absent:[], schedules:[], subjects:[...defaultSubjects], activeDate:dateKey(new Date()), offset:0, cMo:null, cD:null };
-        let selectedSubject = '';
-        
-        function saveState() {
-            localStorage.setItem('examApp_state', JSON.stringify(state));
-        }
-
-        function loadState() {
-            const saved = localStorage.getItem('examApp_state');
-            if (saved) {
-                const data = JSON.parse(saved);
-                state.total = data.total ?? 45;
-                state.present = data.present ?? 45;
-                state.absent = data.absent ?? [];
-                state.schedules = (data.schedules ?? []).map(s => ({...s, date:s.date || dateKey(new Date())}));
-                state.subjects = data.subjects?.length ? data.subjects : [...defaultSubjects];
-                state.activeDate = data.activeDate || dateKey(new Date());
-            }
-        }
-
-        function showAlert(msg) {
-            const el = document.getElementById('error-overlay');
-            el.innerText = msg; el.style.display = 'block';
-            setTimeout(() => { el.style.display = 'none'; }, 3000);
-        }
-
-        /* 修改：新增連動邏輯 */
-        function adjustPicker(id, step, min, max) {
-            const el = document.getElementById(id);
-            let val = parseInt(el.value) + step;
-            if (val > max) val = min; if (val < min) val = max;
-            el.value = val.toString().padStart(2, '0');
-
-            // 規則1：調整開始小時，結束小時同步動
-            if (id === 'ex-st-h') {
-                const endHEl = document.getElementById('ex-et-h');
-                let endHVal = parseInt(endHEl.value) + step;
-                if (endHVal > 23) endHVal = 0; if (endHVal < 0) endHVal = 23;
-                endHEl.value = endHVal.toString().padStart(2, '0');
-            }
-        }
-
-        function setPickerVal(id, val) {
-            const el = document.getElementById(id); if(el) el.value = val.toString().padStart(2, '0');
-        }
-
-        function getPickerVal(id) { return parseInt(document.getElementById(id).value); }
-
-        function initClockFace() {
-            const clock = document.getElementById('analog-clock');
-            if(!clock) return;
-            clock.innerHTML = "";
-            for(let i=0; i<60; i++) {
-                const container = document.createElement('div');
-                container.className = 'mark-container';
-                container.style.transform = `rotate(${i * 6}deg)`;
-                const line = document.createElement('div');
-                line.className = 'mark-line';
-                const isHour = i % 5 === 0;
-                line.style.width = isHour ? '6px' : '3px';
-                line.style.height = isHour ? '14px' : '8px';
-                line.style.backgroundColor = isHour ? 'var(--hour-mark)' : 'var(--min-mark)';
-                container.appendChild(line); clock.appendChild(container);
-            }
-            const hands = [['h-hand', '25%', '#1e293b', 10], ['m-hand', '38%', '#334155', 7], ['s-hand', '42%', '#ef4444', 4]];
-            hands.forEach(h => {
-                const el = document.createElement('div');
-                el.id = h[0]; el.className = 'hand';
-                el.style.width = h[3] + 'px'; el.style.height = h[1];
-                el.style.backgroundColor = h[2]; clock.appendChild(el);
-            });
-            const nut = document.createElement('div');
-            nut.className = 'center-nut'; nut.style.width = '14px'; nut.style.height = '14px';
-            clock.appendChild(nut);
-        }
-
-        function getNow() {
-            let d = new Date(Date.now() + state.offset);
-            if(state.cMo) { d.setMonth(state.cMo-1); d.setDate(state.cD); }
-            return d;
-        }
-
-        function updateTick() {
-            const n = getNow();
-            const h = n.getHours(), m = n.getMinutes(), s = n.getSeconds();
-            document.getElementById('digital-clock').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
-            document.getElementById('date-display').innerText = `${n.getMonth()+1}月${n.getDate()}日`;
-            document.getElementById('day-display').innerText = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'][n.getDay()];
-            
-            const sh = document.getElementById('s-hand'), mh = document.getElementById('m-hand'), hh = document.getElementById('h-hand');
-            if(sh) sh.style.transform = `translateX(-50%) rotate(${s*6}deg)`;
-            if(mh) mh.style.transform = `translateX(-50%) rotate(${m*6 + s*0.1}deg)`;
-            if(hh) hh.style.transform = `translateX(-50%) rotate(${(h%12)*30 + m*0.5}deg)`;
-            
-            updateStatus(n);
-        }
-
-        function updateStatus(n) {
-            const curTimeStr = n.getHours().toString().padStart(2,'0')+":"+n.getMinutes().toString().padStart(2,'0');
-            const nowSec = n.getHours()*3600 + n.getMinutes()*60 + n.getSeconds();
-            
-            const today = dateKey(n);
-            const active = state.schedules.find(s => s.date === today && curTimeStr >= s.st && curTimeStr < s.et);
-            const examMode = document.getElementById('exam-mode');
-            const gapMode = document.getElementById('gap-mode');
-
-            // 每次更新狀態都重新渲染一次考程列表，以確保視覺狀態同步
-            renderSchedules();
-
-            if(active) {
-                examMode.style.display = "block"; gapMode.style.display = "none";
-                document.getElementById('subject-now').innerText = active.sub;
-                
-                const [sh, sm] = active.st.split(':').map(Number);
-                const [eh, em] = active.et.split(':').map(Number);
-                const duration = (eh * 60 + em) - (sh * 60 + sm);
-                
-                document.getElementById('range-now').innerText = `${active.st} 至 ${active.et} （共 ${duration} 分）`;
-            } else {
-                const upcoming = state.schedules.filter(s=>s.date===today).map(s=>({...s, sSec:parseInt(s.st.split(':')[0])*3600+parseInt(s.st.split(':')[1])*60}))
-                    .filter(s=>s.sSec > nowSec).sort((a,b)=>a.sSec-b.sSec);
-                const next = upcoming[0];
-
-                if(next) {
-                    const diff = next.sSec - nowSec;
-                    const mm = Math.floor(diff/60); const ss = diff%60;
-                    
-                    if (diff <= 300) {
-                        examMode.style.display = "none"; gapMode.style.display = "block";
-                        document.getElementById('gap-countdown').innerText = `倒數 ${mm} 分 ${ss} 秒 即將考 ${next.sub}`;
-                    } else {
-                        examMode.style.display = "block"; gapMode.style.display = "none";
-                        document.getElementById('subject-now').innerHTML = "請安靜自習";
-                        document.getElementById('range-now').innerHTML = `倒數 <span style="color:#f59e0b; font-weight:900;">${mm}</span> 分 進行 <span style="color:#f59e0b; font-weight:900;">${next.sub}</span> 考試`;
-                    }
-                } else {
-                    examMode.style.display = "block"; gapMode.style.display = "none";
-                    document.getElementById('subject-now').innerText = "請安靜自習";
-                    document.getElementById('range-now').innerText = "今日考程已結束";
-                }
-            }
-        }
-
-        window.adjustCount = (t, v) => { 
-            if(t==='total') { state.total = Math.max(0, state.total + v); state.present = state.total; }
-            else { state.present = Math.max(0, Math.min(state.total, state.present + v)); }
-            renderAttendance(); 
-            saveState();
-        };
-
-        function renderAttendance() {
-            document.getElementById('total-val').innerText = state.total;
-            document.getElementById('present-val').innerText = state.present;
-            document.getElementById('absent-count-label').innerText = state.total - state.present;
-            document.getElementById('absent-list').innerHTML = state.absent.map((x,i)=>`<span style="background:rgba(239,68,68,0.2); padding:4px 10px; border-radius:6px; font-size:0.8rem; cursor:pointer;" onclick="state.absent.splice(${i},1);renderAttendance();saveState();">${x} ✕</span>`).join('');
-        }
-
-        window.submitAbsent = () => { 
-            const v = document.getElementById('input-absent').value; 
-            if(v) state.absent.push(...v.split(/[\s,，]/).filter(x=>x)); 
-            document.getElementById('input-absent').value=''; closeModal(); renderAttendance(); 
-            saveState();
-        };
-
-        const timeMinutes = value => { const [h,m] = value.split(':').map(Number); return h*60+m; };
-        const asTime = value => `${String(Math.floor((value%1440)/60)).padStart(2,'0')}:${String(value%60).padStart(2,'0')}`;
-        function renderSubjects() {
-            document.getElementById('subject-shortcuts').innerHTML = state.subjects.map(s => `<button class="subject-btn ${s===selectedSubject?'selected':''}" onclick="setSub(this.dataset.subject)" data-subject="${s.replaceAll('&','&amp;').replaceAll('"','&quot;')}">${s}</button>`).join('');
-        }
-        window.setSub = s => { selectedSubject=s; renderSubjects(); };
-        window.addSubject = () => { const input=document.getElementById('new-subject'), value=input.value.trim(); if(!value)return; if(!state.subjects.includes(value))state.subjects.push(value); input.value=''; selectedSubject=value; saveState(); renderSubjects(); };
-        window.setDuration = duration => { const start=document.getElementById('exam-start').value; if(!start)return showAlert('請先選擇開始時間'); document.getElementById('exam-end').value=asTime(timeMinutes(start)+duration); };
-        window.openExamModal = (editId = null) => {
-            const item = state.schedules.find(s => String(s.id)===String(editId));
-            const now=getNow(), start=Math.ceil((now.getHours()*60+now.getMinutes())/5)*5;
-            document.getElementById('exam-modal-title').innerText=item?'編輯考程':'新增考程';
-            document.getElementById('edit-exam-id').value=item?.id||'';
-            document.getElementById('exam-date').value=item?.date||state.activeDate||dateKey(now);
-            document.getElementById('exam-start').value=item?.st||asTime(start);
-            document.getElementById('exam-end').value=item?.et||asTime(start+50);
-            document.getElementById('new-subject').value=''; selectedSubject=item?.sub||''; renderSubjects(); openModal('exam');
-        };
-        window.submitExam = () => {
-            const id=document.getElementById('edit-exam-id').value, date=document.getElementById('exam-date').value, st=document.getElementById('exam-start').value, et=document.getElementById('exam-end').value;
-            if(!date||!selectedSubject||!st||!et)return showAlert('請完整選擇日期、科目及時間');
-            if(timeMinutes(et)<=timeMinutes(st))return showAlert('結束時間必須晚於開始時間');
-            const overlap=state.schedules.some(s=>String(s.id)!==String(id)&&s.date===date&&timeMinutes(st)<timeMinutes(s.et)&&timeMinutes(et)>timeMinutes(s.st));
-            if(overlap)return showAlert('此時段與既有考程重疊');
-            if(id){const i=state.schedules.findIndex(s=>String(s.id)===String(id));state.schedules[i]={...state.schedules[i],date,sub:selectedSubject,st,et};}
-            else state.schedules.push({id:Date.now(),date,sub:selectedSubject,st,et});
-            state.activeDate=date; closeModal(); saveState(); renderSchedules();
-        };
-        window.selectExamDay = date => {state.activeDate=date;saveState();renderSchedules();};
-        function renderSchedules() {
-            const dates=[...new Set(state.schedules.map(s=>s.date))].sort(); if(!dates.includes(state.activeDate))dates.push(state.activeDate); dates.sort();
-            const tabs=document.getElementById('day-tabs'); tabs.style.display=dates.length>1?'flex':'none'; tabs.innerHTML=dates.map((d,i)=>`<button class="day-tab ${d===state.activeDate?'active':''}" onclick="selectExamDay('${d}')">第${i+1}天 ${d.slice(5).replace('-','/')}</button>`).join('');
-            const n=getNow(), today=dateKey(n), cur=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
-            const items=state.schedules.filter(s=>s.date===state.activeDate).sort((a,b)=>a.st.localeCompare(b.st));
-            document.getElementById('schedule-list').innerHTML=items.length?items.map(s=>`<div class="schedule-card ${s.date===today&&cur>=s.st&&cur<s.et?'active-exam-card':''} ${s.date<today||(s.date===today&&cur>=s.et)?'past-exam-card':''}"><div><span class="sub-name">${s.sub}</span><br><span class="sub-time">${s.st} — ${s.et}</span></div><div style="display:flex;gap:12px"><button class="duration-btn" onclick="openExamModal('${s.id}')">編輯</button><button class="duration-btn" onclick="state.schedules=state.schedules.filter(x=>String(x.id)!=='${s.id}');saveState();renderSchedules()">刪除</button></div></div>`).join(''):'<div style="color:var(--text-dim);padding:18px;text-align:center">這一天尚無考程</div>';
-        }
-
-        window.openModal = (id) => {
-            const m = document.getElementById('modal-'+id);
-            if(m) { m.style.display='flex'; m.scrollTop = 0; }
-        }
-        window.closeModal = () => document.querySelectorAll('.modal').forEach(m=>m.style.display='none');
-        window.openTimeModal = () => {
-            const n = getNow(); setPickerVal('tk-mo', n.getMonth()+1); setPickerVal('tk-d', n.getDate());
-            setPickerVal('tk-h', n.getHours()); setPickerVal('tk-m', n.getMinutes()); openModal('time');
-        };
-        window.saveTime = () => { 
-            state.cMo = getPickerVal('tk-mo'); state.cD = getPickerVal('tk-d'); 
-            const t = new Date(); t.setHours(getPickerVal('tk-h'), getPickerVal('tk-m'), 0, 0); 
-            state.offset = t.getTime() - Date.now(); closeModal(); updateTick(); 
-        };
-        window.syncTime = () => { state.offset=0; state.cMo=null; state.cD=null; closeModal(); updateTick(); };
-
-        const widgetDefaults={analog:{left:'38%',top:'20px',width:'330px',height:'360px'},digital:{left:'58%',top:'45px',width:'430px',height:'170px'}};
-        function saveWidget(name){const el=document.getElementById(`${name}-widget`);localStorage.setItem(`examWidget_${name}`,JSON.stringify({left:el.style.left,top:el.style.top,width:el.style.width,height:el.style.height,hidden:el.classList.contains('hidden')}));}
-        function updateRestore(name){document.getElementById(`show-${name}`).hidden=!document.getElementById(`${name}-widget`).classList.contains('hidden');}
-        window.hideWidget=name=>{document.getElementById(`${name}-widget`).classList.add('hidden');saveWidget(name);updateRestore(name);};
-        window.showWidget=name=>{document.getElementById(`${name}-widget`).classList.remove('hidden');saveWidget(name);updateRestore(name);};
-        window.resetWidgets=()=>{['analog','digital'].forEach(name=>{const el=document.getElementById(`${name}-widget`);localStorage.removeItem(`examWidget_${name}`);el.classList.remove('hidden');Object.assign(el.style,widgetDefaults[name]);updateRestore(name);});initClockFace();};
-        function initWidget(name){
-            const el=document.getElementById(`${name}-widget`), bar=el.querySelector('.widget-bar'), saved=JSON.parse(localStorage.getItem(`examWidget_${name}`)||'null');
-            Object.assign(el.style,saved||widgetDefaults[name]); if(saved?.hidden)el.classList.add('hidden'); updateRestore(name);
-            let drag=null;
-            bar.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;drag={x:e.clientX,y:e.clientY,left:el.offsetLeft,top:el.offsetTop};bar.setPointerCapture(e.pointerId);});
-            bar.addEventListener('pointermove',e=>{if(!drag)return;el.style.left=`${Math.min(innerWidth-el.offsetWidth,Math.max(0,drag.left+e.clientX-drag.x))}px`;el.style.top=`${Math.min(innerHeight-el.offsetHeight,Math.max(0,drag.top+e.clientY-drag.y))}px`;el.style.right='auto';});
-            bar.addEventListener('pointerup',()=>{drag=null;saveWidget(name);});
-            new ResizeObserver(()=>saveWidget(name)).observe(el);
-        }
-
-        window.onload = () => {
-            loadState();
-            initClockFace();
-            initWidget('analog'); initWidget('digital');
-            setInterval(updateTick, 1000); 
-            updateTick(); 
-            renderAttendance(); 
-            renderSchedules();
-            window.addEventListener('resize', initClockFace); 
-        };
-    </script>
+  <script>
+    const SUBJECT_ORDER=['國文','中文作文','英文','英聽','數學','歷史','地理','公民','物理','化學','生物','地科','理化'];
+    const DURATIONS=[25,40,50,60,70,80,95];
+    const embedded=JSON.parse(document.getElementById('embedded-config').textContent);
+    const storageKey=()=>`exam-helper:${embedded.id}`;
+    const clone=value=>JSON.parse(JSON.stringify(value));
+    let config=clone(embedded),selectedSubject='',lastState='';
+    try{const saved=localStorage.getItem(storageKey());if(saved)config={...config,...JSON.parse(saved)}}catch(e){console.warn(e)}
+    normalizeConfig();
+    function normalizeConfig(){config.students=Array.isArray(config.students)?config.students:[];config.absentIds=Array.isArray(config.absentIds)?config.absentIds:[];config.schedules=Array.isArray(config.schedules)?config.schedules:[];config.subjects=[...new Set([...(config.subjects||[]),...SUBJECT_ORDER])].sort((a,b)=>subjectRank(a)-subjectRank(b));config.settings={reminder10:10,reminder5:5,reminder1:1,prepText:'清空桌面\n準備文具及答案卡\n保持安靜',timeOffset:0,...config.settings}}
+    function subjectRank(s){const i=SUBJECT_ORDER.indexOf(s);return i<0?999:i}
+    function saveConfig(){localStorage.setItem(storageKey(),JSON.stringify(config));const el=document.getElementById('save-status');if(el){el.textContent='已儲存 '+new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}renderAll()}
+    const pad=n=>String(n).padStart(2,'0');
+    const dateKey=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    const minutes=t=>{const[h,m]=t.split(':').map(Number);return h*60+m};
+    const timeText=seconds=>`${pad(Math.floor(seconds/60))}:${pad(Math.floor(seconds%60))}`;
+    function now(){return new Date(Date.now()+(config.settings.timeOffset||0))}
+    function dateLabel(key){const d=new Date(key+'T00:00:00');return `${d.getMonth()+1}月${d.getDate()}日（${'日一二三四五六'[d.getDay()]}）`}
+    function initClock(){const face=document.getElementById('clock-face');for(let i=0;i<60;i++){const tick=document.createElement('i');tick.className='tick '+(i%5===0?'hour':'');tick.style.transform=`translateX(-50%) rotate(${i*6}deg)`;face.appendChild(tick)}}
+    function getTimeline(d){const key=dateKey(d),sec=d.getHours()*3600+d.getMinutes()*60+d.getSeconds(),items=config.schedules.filter(x=>x.date===key).sort((a,b)=>a.start.localeCompare(b.start)),active=items.find(x=>sec>=minutes(x.start)*60&&sec<minutes(x.end)*60),next=items.find(x=>minutes(x.start)*60>sec);return{key,sec,items,active,next}}
+    function updateScreen(){
+      const d=now(),h=d.getHours(),m=d.getMinutes(),s=d.getSeconds(),timeline=getTimeline(d);
+      document.getElementById('digital-time').textContent=`${pad(h)}:${pad(m)}:${pad(s)}`;document.getElementById('hour-hand').style.transform=`translateX(-50%) rotate(${(h%12)*30+m*.5}deg)`;document.getElementById('minute-hand').style.transform=`translateX(-50%) rotate(${m*6+s*.1}deg)`;document.getElementById('second-hand').style.transform=`translateX(-50%) rotate(${s*6}deg)`;
+      const info=document.getElementById('info-card'),label=document.getElementById('state-label'),subject=document.getElementById('subject-now'),range=document.getElementById('time-range'),count=document.getElementById('countdown'),message=document.getElementById('message'),ring=document.getElementById('progress-ring'),ringLabel=document.getElementById('ring-label');let phase='idle',progress=0,ringColor='var(--blue)';
+      if(timeline.active){const start=minutes(timeline.active.start)*60,end=minutes(timeline.active.end)*60,remain=end-timeline.sec,total=end-start,ratio=remain/total;phase='exam';label.textContent='考試進行中';subject.textContent=timeline.active.subject;range.textContent=`${timeline.active.start}－${timeline.active.end}`;count.textContent=`剩餘 ${timeText(remain)}`;message.textContent=ratio<=.1?'考試即將結束，請掌握作答時間':'';progress=ratio*100;ringLabel.textContent='考試剩餘';ringColor=ratio<=.1?'var(--red)':ratio<=.25?'var(--yellow)':'var(--green)'}
+      else if(timeline.next){const remain=minutes(timeline.next.start)*60-timeline.sec,mins=remain/60,r10=Number(config.settings.reminder10),r5=Number(config.settings.reminder5),r1=Number(config.settings.reminder1);subject.textContent=mins<=r10?timeline.next.subject:'安靜自習';range.textContent=`下一科 ${timeline.next.subject}｜${timeline.next.start} 開始`;count.textContent=`倒數 ${timeText(remain)}`;ringLabel.textContent='距下科開始';progress=Math.min(100,remain/Math.max(r10*60,1)*100);if(mins<=r1){phase='final';label.textContent='考試即將開始';message.textContent='請停止交談並就座';ringColor='var(--red)'}else if(mins<=r5){phase='soon';label.textContent=`請準備${timeline.next.subject}考試`;message.textContent=config.settings.prepText;ringColor='var(--orange)'}else if(mins<=r10){phase='prepare';label.textContent='安靜自習即將結束';message.textContent='請開始準備考試用品';ringColor='var(--yellow)'}else{phase='study';label.textContent='安靜自習';message.textContent='請保持考場安靜';ringColor='var(--blue)'}}
+      else if(timeline.items.length){phase='done';label.textContent='今日考程已全部結束';subject.textContent='考試結束';range.textContent='';count.textContent='';message.textContent='請依監考老師指示行動';progress=0;ringLabel.textContent='今日完成';ringColor='#64748b'}
+      else{phase='idle';label.textContent='今天沒有考程';subject.textContent='安靜自習';range.textContent='';count.textContent='';message.textContent=nextExamDay(timeline.key);progress=0;ringLabel.textContent='現在時間';ringColor='var(--blue)'}
+      info.className=`card info-card phase-${phase}`;ring.style.strokeDashoffset=String(100-progress);ring.style.stroke=ringColor;if(lastState!==`${phase}:${timeline.active?.id||timeline.next?.id||''}`){lastState=`${phase}:${timeline.active?.id||timeline.next?.id||''}`;renderToday()}
+    }
+    function nextExamDay(today){const date=[...new Set(config.schedules.map(x=>x.date))].sort().find(x=>x>today);return date?`下一個考試日：${dateLabel(date)}`:'尚未安排後續考程'}
+    function renderToday(){const d=now(),t=getTimeline(d);document.getElementById('today-date').textContent=dateLabel(t.key);document.getElementById('today-schedule').innerHTML=t.items.length?t.items.map(x=>{const start=minutes(x.start)*60,end=minutes(x.end)*60,status=t.sec>=end?'done':t.sec>=start?'active':x===t.next?'next':'';const label=status==='done'?'已完成':status==='active'?'進行中':status==='next'?'下一科':'';return`<div class="schedule-item ${status}"><time>${x.start}－${x.end}</time><strong>${escapeHtml(x.subject)}</strong>${label?`<span class="tag">${label}</span>`:'<span></span>'}</div>`}).join(''):'<div class="empty">今日尚未安排考程</div>';renderAttendanceSummary()}
+    function renderAttendanceSummary(){const absent=config.students.filter(x=>config.absentIds.includes(x.id));document.getElementById('total-count').textContent=config.students.length;document.getElementById('present-count').textContent=Math.max(0,config.students.length-absent.length);document.getElementById('absent-count').textContent=absent.length;document.getElementById('absent-display').textContent=absent.length?absent.map(x=>`${x.no} ${x.name}`).join('、'):'目前無缺席資料'}
+    function escapeHtml(v){const d=document.createElement('div');d.textContent=v;return d.innerHTML}
+    function openSettings(){document.getElementById('settings-modal').classList.add('open');renderAdmin();resetExamForm()}
+    function closeSettings(){document.getElementById('settings-modal').classList.remove('open')}
+    function showTab(name){document.querySelectorAll('.tab-page').forEach(x=>x.classList.toggle('active',x.id===`tab-${name}`));document.querySelectorAll('.tab-btn').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));renderAdmin()}
+    function renderAdmin(){renderSubjects();renderAdminSchedules();renderRoster();renderAttendanceAdmin();document.getElementById('reminder10').value=config.settings.reminder10;document.getElementById('reminder5').value=config.settings.reminder5;document.getElementById('reminder1').value=config.settings.reminder1;document.getElementById('prep-text').value=config.settings.prepText}
+    function renderSubjects(){const edit=document.getElementById('edit-id').value;document.getElementById('subject-grid').innerHTML=config.subjects.map(s=>{const existing=config.schedules.find(x=>x.subject===s&&String(x.id)!==String(edit)),used=!!existing,title=existing?`已安排：${dateLabel(existing.date)} ${existing.start}－${existing.end}`:'';return`<button class="chip ${selectedSubject===s?'selected':''} ${used?'used':''}" ${used?'disabled':''} title="${title}" onclick="selectSubject('${s.replaceAll("'","\\'")}')">${escapeHtml(s)}${used?' ✓ 已排定':''}</button>`}).join('')}
+    function selectSubject(s){selectedSubject=s;renderSubjects()}
+    function addSubject(){const input=document.getElementById('new-subject'),s=input.value.trim();if(!s)return;if(!config.subjects.includes(s))config.subjects.push(s);config.subjects.sort((a,b)=>subjectRank(a)-subjectRank(b));input.value='';selectedSubject=s;saveConfig();renderSubjects()}
+    function resetExamForm(){document.getElementById('exam-form-title').textContent='新增考程';document.getElementById('edit-id').value='';document.getElementById('exam-date').value=dateKey(now());const total=Math.ceil((now().getHours()*60+now().getMinutes())/5)*5;document.getElementById('start-time').value=`${pad(Math.floor(total/60)%24)}:${pad(total%60)}`;document.getElementById('end-time').value=`${pad(Math.floor((total+50)/60)%24)}:${pad((total+50)%60)}`;selectedSubject='';document.getElementById('exam-error').classList.add('hidden');document.getElementById('duration-grid').innerHTML=DURATIONS.map(n=>`<button class="chip" onclick="setDuration(${n})">${n} 分</button>`).join('')+`<span class="chip">自訂</span>`;renderSubjects()}
+    function setDuration(n){const start=document.getElementById('start-time').value;if(!start)return;const value=minutes(start)+n;document.getElementById('end-time').value=`${pad(Math.floor(value/60)%24)}:${pad(value%60)}`}
+    function showExamError(text){const el=document.getElementById('exam-error');el.textContent=text;el.classList.remove('hidden')}
+    function saveExam(){const id=document.getElementById('edit-id').value,date=document.getElementById('exam-date').value,start=document.getElementById('start-time').value,end=document.getElementById('end-time').value;if(!date||!selectedSubject||!start||!end)return showExamError('請完整選擇日期、科目與時間。');if(minutes(end)<=minutes(start))return showExamError('結束時間必須晚於開始時間。');if(config.schedules.some(x=>String(x.id)!==String(id)&&x.subject===selectedSubject))return showExamError('此科目已排入考程，請直接編輯既有考程。');if(config.schedules.some(x=>String(x.id)!==String(id)&&x.date===date&&minutes(start)<minutes(x.end)&&minutes(end)>minutes(x.start)))return showExamError('此時段與同日既有考程重疊。');const item={id:id||String(Date.now()),date,subject:selectedSubject,start,end};if(id)config.schedules[config.schedules.findIndex(x=>String(x.id)===String(id))]=item;else config.schedules.push(item);config.schedules.sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));saveConfig();resetExamForm();renderAdminSchedules()}
+    function editExam(id){const x=config.schedules.find(x=>String(x.id)===String(id));document.getElementById('exam-form-title').textContent='編輯考程';document.getElementById('edit-id').value=x.id;document.getElementById('exam-date').value=x.date;document.getElementById('start-time').value=x.start;document.getElementById('end-time').value=x.end;selectedSubject=x.subject;renderSubjects();scrollTo({top:0,behavior:'smooth'})}
+    function deleteExam(id){if(!confirm('確定刪除這筆考程？'))return;config.schedules=config.schedules.filter(x=>String(x.id)!==String(id));saveConfig();renderAdminSchedules();renderSubjects()}
+    function renderAdminSchedules(){const el=document.getElementById('admin-schedules');el.innerHTML=config.schedules.length?config.schedules.map(x=>`<div class="admin-schedule"><span>${x.date.slice(5)}</span><strong>${escapeHtml(x.subject)}</strong><time>${x.start}－${x.end}</time><span>${minutes(x.end)-minutes(x.start)} 分</span><span><button class="btn" onclick="editExam('${x.id}')">編輯</button> <button class="btn danger" onclick="deleteExam('${x.id}')">刪除</button></span></div>`).join(''):'<div class="empty">尚未建立考程</div>'}
+    function parseRoster(){const lines=document.getElementById('roster-input').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),students=[],seen=new Set(),errors=[];for(const line of lines){const parts=line.split(/[\t,， ]+/).filter(Boolean),no=parts.shift(),name=parts.join(' ');if(!no||!name){errors.push(`無法解析：${line}`);continue}if(seen.has(no)){errors.push(`座號重複：${no}`);continue}seen.add(no);students.push({id:`s-${no}`,no,name})}const err=document.getElementById('roster-error');if(errors.length){err.textContent=errors.join('；');err.classList.remove('hidden')}else err.classList.add('hidden');if(students.length){config.students=students;config.absentIds=config.absentIds.filter(id=>students.some(s=>s.id===id));saveConfig();renderRoster();renderAttendanceAdmin()}}
+    function renderRoster(){document.getElementById('roster-count').textContent=config.students.length;document.getElementById('roster-preview').innerHTML=config.students.length?config.students.map(s=>`<span class="chip">${escapeHtml(s.no)} ${escapeHtml(s.name)}</span>`).join(''):'<div class="empty">尚未設定名單</div>';document.getElementById('roster-input').value=config.students.map(s=>`${s.no}\t${s.name}`).join('\n')}
+    function renderAttendanceAdmin(){document.getElementById('attendance-grid').innerHTML=config.students.length?config.students.map(s=>`<button class="chip ${config.absentIds.includes(s.id)?'active':''}" onclick="toggleAbsent('${s.id}')">${escapeHtml(s.no)} ${escapeHtml(s.name)}</button>`).join(''):'<div class="empty">請先貼上學生名單</div>'}
+    function toggleAbsent(id){config.absentIds=config.absentIds.includes(id)?config.absentIds.filter(x=>x!==id):[...config.absentIds,id];saveConfig();renderAttendanceAdmin()}
+    function saveDisplaySettings(){const a=+document.getElementById('reminder10').value,b=+document.getElementById('reminder5').value,c=+document.getElementById('reminder1').value;if(!(a>b&&b>c&&c>0))return alert('提醒分鐘必須依序遞減，例如10、5、1。');config.settings.reminder10=a;config.settings.reminder5=b;config.settings.reminder1=c;config.settings.prepText=document.getElementById('prep-text').value.trim();saveConfig()}
+    function setMockTime(){const value=document.getElementById('mock-datetime').value;if(!value)return;config.settings.timeOffset=new Date(value).getTime()-Date.now();saveConfig()}
+    function syncDeviceTime(){config.settings.timeOffset=0;document.getElementById('mock-datetime').value='';saveConfig()}
+    function download(name,text,type='text/html'){const blob=new Blob([text],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+    function downloadableConfig(){const data=clone(config);data.id=`exam-${Date.now()}`;return data}
+    function downloadOfflineHtml(){const data=downloadableConfig(),closeTag='</scr'+'ipt>',configPattern=new RegExp('<script id="embedded-config" type="application/json">[\\s\\S]*?</scr'+'ipt>'),embeddedTag='<script id="embedded-config" type="application/json">'+JSON.stringify(data).replaceAll('<','\\u003c')+closeTag,html='<!doctype html>\n'+document.documentElement.outerHTML.replace(configPattern,embeddedTag).replace(/<div id="settings-modal" class="modal open"/, '<div id="settings-modal" class="modal"');download(`段考小幫手_${dateKey(now())}.html`,html)}
+    function exportJson(){download(`段考設定_${dateKey(now())}.json`,JSON.stringify(config,null,2),'application/json')}
+    function importJson(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const data=JSON.parse(reader.result);if(!Array.isArray(data.schedules)||!Array.isArray(data.students))throw Error();config={...config,...data,id:embedded.id};normalizeConfig();saveConfig();renderAdmin();alert('設定已匯入')}catch(e){alert('設定檔格式不正確')}input.value=''};reader.readAsText(file)}
+    function restoreEmbedded(){if(!confirm('確定清除這台電腦的所有現場修改，回復此HTML內建設定？'))return;localStorage.removeItem(storageKey());config=clone(embedded);normalizeConfig();saveConfig();renderAdmin()}
+    function toggleFullscreen(){if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()}
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('settings-modal').classList.contains('open'))closeSettings()});
+    initClock();renderAll();setInterval(updateScreen,250);
+    function renderAll(){renderToday();updateScreen()}
+  </script>
 </body>
 </html>
