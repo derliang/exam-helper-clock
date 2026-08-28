@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>段考小幫手 v2.1.3</title>
+  <title>段考小幫手 v2.1.4</title>
   <style>
     :root{color-scheme:dark;--bg:#000;--panel:#000;--panel2:#000;--line:#526071;--text:#d8e0e8;--muted:#94a3b8;--blue:#38bdf8;--green:#6ee7a0;--yellow:#e8c85b;--orange:#e79a57;--red:#ef6680}
     *{box-sizing:border-box}html,body{margin:0;width:100%;min-height:100%;font-family:Inter,"Noto Sans TC","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--text)}button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -17,6 +17,7 @@
     .day-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.65vh}.day-tab{padding:5px 8px;border:1px solid #526071;background:#000;color:var(--muted);border-radius:7px;font-size:.82rem}.day-tab.active{border-color:var(--blue);color:var(--blue)}.absent-cards{display:flex;gap:7px;flex-wrap:wrap;overflow:auto;max-height:11vh}.absent-person{border:2px solid var(--red);border-radius:9px;padding:7px 10px;color:#ef9aaa;background:#100006;font-weight:900}.subject-actions{display:grid;grid-template-columns:1fr auto auto auto;gap:7px}.reminder-stage{padding:14px 0;border-bottom:1px solid #526071}.reminder-stage:last-of-type{border-bottom:0}.reminder-line{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end}.clock-controls{display:grid;grid-template-columns:repeat(3,44px);gap:5px}.clock-nudge{position:absolute;right:1.1vw;top:50%;transform:translateY(-50%);z-index:4;padding:7px;border:1px solid #526071;border-radius:12px;background:#000d}.clock-controls .up{grid-column:2}.clock-controls .left{grid-column:1}.clock-controls .reset{grid-column:2}.clock-controls .right{grid-column:3}.clock-controls .down{grid-column:2}.clock-controls .btn{width:44px;height:44px;padding:0;font-size:1.15rem}.mini-modal{position:fixed;inset:0;z-index:120;background:#000b;display:none;place-items:center;padding:16px}.mini-modal.open{display:grid}.mini-panel{width:min(460px,100%);background:#000;border:2px solid #526071;border-radius:16px;padding:20px}.time-parts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.file-action{display:inline-block;margin-bottom:12px}.import-status{display:block;margin-top:12px;white-space:normal;overflow-wrap:anywhere}.settings-preview{height:240px;border:1px solid #526071;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}.settings-preview .clock-wrap{width:190px}.btn,.chip,.input{color:var(--text)}
     @media(max-width:900px){.screen{height:auto;min-height:100vh;grid-template-rows:auto auto;padding-bottom:13vh}.hero{grid-template-columns:1fr}.lower{grid-template-columns:1fr}.clock-wrap,.clock-wrap.size-xl,.clock-wrap.size-lg,.clock-wrap.size-md,.clock-wrap.size-sm{width:min(78vw,55vh)}.grid2{grid-template-columns:1fr}.admin-schedule{grid-template-columns:1fr 1fr}.admin-schedule>*:last-child{grid-column:1/-1}.lower .card{min-height:180px}.bottom-actions{opacity:.9;left:8px;right:8px;justify-content:flex-end;flex-wrap:wrap}.subject-actions{grid-template-columns:1fr 1fr 1fr}.subject-actions .input{grid-column:1/-1}.reminder-line{grid-template-columns:1fr}.import-row{grid-template-columns:1fr!important}}
     .setting-card .clock-controls{display:none}.absence-card.alert{border-color:var(--line)}.absence-card.alert .absent-display{border:0;padding:0;background:#000}.absence-card.alert .section-title{color:#ef9aaa}
+    .clock-nudge{left:0;right:auto;top:auto;bottom:0;transform:none;display:flex;grid-template-columns:none;gap:3px;padding:4px;border-left:0;border-bottom:0;border-radius:0 9px 0 0}.clock-nudge .btn{width:29px;height:29px;font-size:.82rem}.clock-nudge .up,.clock-nudge .left,.clock-nudge .reset,.clock-nudge .right,.clock-nudge .down{grid-column:auto}
   </style>
 </head>
 <body>
@@ -28,7 +29,7 @@
           <svg class="clock-svg" viewBox="0 0 200 200" aria-hidden="true"><circle class="ring-track" cx="100" cy="100" r="92"/><circle id="progress-ring" class="ring-progress" cx="100" cy="100" r="92" pathLength="100" stroke-dasharray="100" stroke-dashoffset="0"/></svg>
           <div id="clock-face" class="clock-face"><div id="hour-hand" class="hand hour-hand"></div><div id="minute-hand" class="hand minute-hand"></div><div id="second-hand" class="hand second-hand"></div><div class="pin"></div></div><div id="large-digital" class="digital-clock">00:00</div><div class="flip-clock"><span id="flip-time">00:00</span></div>
         </div>
-        <div class="clock-controls clock-nudge" aria-label="微調時鐘位置"><button class="btn up" title="向上移動" onclick="moveClock(0,-8)">↑</button><button class="btn left" title="向左移動" onclick="moveClock(-8,0)">←</button><button class="btn reset" title="恢復預設位置" onclick="resetClockPosition()">●</button><button class="btn right" title="向右移動" onclick="moveClock(8,0)">→</button><button class="btn down" title="向下移動" onclick="moveClock(0,8)">↓</button></div>
+        <div class="clock-controls clock-nudge" aria-label="微調時鐘位置"><button class="btn up" title="向上移動" onclick="moveClock(0,-8)">↑</button><button class="btn down" title="向下移動" onclick="moveClock(0,8)">↓</button><button class="btn left" title="向左移動" onclick="moveClock(-8,0)">←</button><button class="btn right" title="向右移動" onclick="moveClock(8,0)">→</button><button class="btn reset" title="恢復預設位置" onclick="resetClockPosition()">●</button></div>
       </div>
       <div id="info-card" class="card info-card"><div id="state-label" class="state-label">載入中</div><div id="subject-now" class="subject-now">段考小幫手</div><div id="time-range" class="time-range"></div><div id="countdown" class="countdown"></div><div id="message" class="message"></div></div>
     </section>
@@ -42,7 +43,7 @@
 
   <div id="settings-modal" class="modal" role="dialog" aria-modal="true">
     <div class="settings">
-      <div class="settings-head"><div><h1>後台設定｜段考小幫手 v2.1.3</h1><div id="save-status" class="save-status">所有修改會自動儲存在本機</div></div><button class="btn" onclick="closeSettings()">返回</button></div>
+      <div class="settings-head"><div><h1>後台設定｜段考小幫手 v2.1.4</h1><div id="save-status" class="save-status">所有修改會自動儲存在本機</div></div><button class="btn" onclick="closeSettings()">返回</button></div>
       <nav class="tabs"><button class="btn tab-btn active" data-tab="schedule" onclick="showTab('schedule')">考程設定</button><button class="btn tab-btn" data-tab="roster" onclick="showTab('roster')">學生名單</button><button class="btn tab-btn" data-tab="attendance" onclick="showTab('attendance')">出缺席</button><button class="btn tab-btn" data-tab="display" onclick="showTab('display')">提醒與時間</button><button class="btn tab-btn" data-tab="backup" onclick="showTab('backup')">離線使用</button></nav>
       <section id="tab-schedule" class="tab-page active">
         <div class="grid2">
@@ -60,7 +61,7 @@
   <div id="clock-time-modal" class="mini-modal"><div class="mini-panel"><h2>調整時鐘時間</h2><p class="notice">只調整本程式顯示時間，不會變更電腦時間。</p><div class="time-parts"><label class="field"><span>時</span><input id="clock-hour" class="input" type="number" min="0" max="23"></label><label class="field"><span>分</span><input id="clock-minute" class="input" type="number" min="0" max="59"></label><label class="field"><span>秒</span><input id="clock-second" class="input" type="number" min="0" max="59"></label></div><div class="form-actions"><button class="btn" onclick="syncDeviceTime();closeClockTimeDialog()">恢復系統時間</button><button class="btn" onclick="closeClockTimeDialog()">取消</button><button class="btn primary" onclick="applyClockTime()">套用</button></div></div></div>
 
   <script>
-    const APP_VERSION='2.1.3';
+    const APP_VERSION='2.1.4';
     const SUBJECT_ORDER=['國文','中文作文','英文','英聽','數學','歷史','地理','公民','物理','化學','生物','地科','理化'];
     const SUBJECT_ALIASES={'國語文':'國文','國語':'國文','語文':'國文','英語文':'英文','英語':'英文','英文科':'英文','數學科':'數學','中國語文':'國文','公民與社會':'公民','地球科學':'地科'};
     const DURATIONS=[25,40,50,60,70,80,95];
