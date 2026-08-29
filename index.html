@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>段考小幫手 v2.4.3</title>
+  <title>段考小幫手 v2.5.0</title>
   <style>
     :root{color-scheme:dark;--bg:#000;--panel:#000;--panel2:#000;--line:#526071;--text:#d8e0e8;--muted:#94a3b8;--blue:#38bdf8;--green:#6ee7a0;--yellow:#e8c85b;--orange:#e79a57;--red:#ef6680}
     *{box-sizing:border-box}html,body{margin:0;width:100%;min-height:100%;font-family:Inter,"Noto Sans TC","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--text)}button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -22,7 +22,7 @@
     .setting-card .clock-controls{display:none}.absence-card.alert{border-color:var(--line)}.absence-card.alert .absent-display{border:0;padding:0;background:#000}.absence-card.alert .section-title{color:#ef9aaa}
     .clock-nudge{left:2.778%;right:auto;top:auto;bottom:-2px;transform:none;display:flex;grid-template-columns:none;gap:3px;padding:4px;border-bottom:0;border-radius:9px 9px 0 0}.clock-nudge .btn{width:29px;height:29px;font-size:.82rem}.clock-nudge .up,.clock-nudge .left,.clock-nudge .reset,.clock-nudge .right,.clock-nudge .down{grid-column:auto}.clock-time-quick{position:absolute;right:1.2vw;bottom:-2px;border-bottom:0;border-radius:9px 9px 0 0;z-index:5}.mini-duration{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.mini-duration .btn{padding:6px 9px}
     /* 設定頁專用的低彩度分區色；主展示畫面不受影響 */
-    .settings{background:linear-gradient(145deg,#07111f,#101a2a);border-color:#526b88;box-shadow:0 18px 70px #000}.settings-head h1,.setting-card h2,.setting-card h3{color:#cbe6ff}.settings .setting-card{background:#0b1524;border-color:#405a78}.settings .input{background:#07101c;border-color:#607b9b;color:#e5edf5}.settings .input:focus{outline:2px solid #3e8fbd;border-color:#8bd5ff}.settings .tab-btn{background:#111d2d;border-color:#526b88}.settings .tab-btn[data-tab="schedule"]{color:#8bd5ff}.settings .tab-btn[data-tab="roster"]{color:#a7e7ba}.settings .tab-btn[data-tab="attendance"]{color:#ffc987}.settings .tab-btn[data-tab="display"]{color:#c8b8ff}.settings .tab-btn[data-tab="backup"]{color:#8edbd0}.settings .tab-btn.active{background:#256b96;color:#fff;border-color:#9bdcff}.choice-row{display:flex;gap:8px;flex-wrap:wrap}.choice-btn.selected{background:#246f9d;border-color:#9bdcff;color:#fff;box-shadow:0 0 0 2px #38bdf833}.voice-label-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px;color:#a9bad0;font-weight:800}.voice-label-row .voice-option{margin:0}.voice-settings{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stat-number{display:block}.stat-input{max-width:105px;margin:auto}.grade-filter{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;margin:12px 0}
+    .settings{background:linear-gradient(145deg,#07111f,#101a2a);border-color:#526b88;box-shadow:0 18px 70px #000}.settings-head h1,.setting-card h2,.setting-card h3{color:#cbe6ff}.settings .setting-card{background:#0b1524;border-color:#405a78}.settings .input{background:#07101c;border-color:#607b9b;color:#e5edf5}.settings .input:focus{outline:2px solid #3e8fbd;border-color:#8bd5ff}.settings .tab-btn{background:#111d2d;border-color:#526b88}.settings .tab-btn[data-tab="schedule"]{color:#8bd5ff}.settings .tab-btn[data-tab="roster"]{color:#a7e7ba}.settings .tab-btn[data-tab="attendance"]{color:#ffc987}.settings .tab-btn[data-tab="display"]{color:#c8b8ff}.settings .tab-btn[data-tab="backup"]{color:#8edbd0}.settings .tab-btn.active{background:#256b96;color:#fff;border-color:#9bdcff}.choice-row{display:flex;gap:8px;flex-wrap:wrap}.choice-btn.selected{background:#246f9d;border-color:#9bdcff;color:#fff;box-shadow:0 0 0 2px #38bdf833}.voice-label-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px;color:#a9bad0;font-weight:800}.voice-label-row .voice-option{margin:0}.voice-settings{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stat-number{display:block}.stat-input{max-width:105px;margin:auto}.grade-filter{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;margin:12px 0}.settings .setting-card.dragover{border-color:#8bd5ff;background:#14283d;box-shadow:0 0 0 2px #38bdf866}.settings .setting-card.dragover *{pointer-events:none}
     .field-group{display:flex;flex-direction:column;gap:14px}.field-divider{border:0;border-top:1px solid #405a78;margin:18px 0}.grid2{row-gap:20px}.setting-card{display:flex;flex-direction:column;gap:2px}.setting-card>h2,.setting-card>h3{margin-bottom:10px}.setting-card hr{border:0;border-top:1px solid #405a78;margin:16px 0}
     .icon-btn{width:34px;height:34px;padding:0;font-size:1.05rem;line-height:1;display:inline-flex;align-items:center;justify-content:center}
     .roster-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;max-height:520px;overflow:auto;padding-right:2px}.roster-card{border:1px solid #405a78;border-radius:8px;padding:7px 8px;background:#0b1524;display:flex;flex-direction:column;gap:5px;min-width:0}.roster-card-head{display:flex;align-items:baseline;gap:5px;overflow-wrap:anywhere;font-size:.86rem}.roster-card-head strong{color:#8bd5ff}.roster-card-actions{display:flex;gap:5px}.roster-card-actions .icon-btn{width:28px;height:28px;font-size:.85rem}
@@ -54,12 +54,12 @@
 
   <div id="settings-modal" class="modal" role="dialog" aria-modal="true">
     <div class="settings">
-      <div class="settings-head"><div><h1>設定｜段考小幫手 v2.4.3</h1><div id="save-status" class="save-status">所有修改會自動儲存在本機</div></div><button class="btn" onclick="closeSettings()">返回</button></div>
+      <div class="settings-head"><div><h1>設定｜段考小幫手 v2.5.0</h1><div id="save-status" class="save-status">所有修改會自動儲存在本機</div></div><button class="btn" onclick="closeSettings()">返回</button></div>
       <nav class="tabs"><button class="btn tab-btn active" data-tab="schedule" onclick="showTab('schedule')">考程設定</button><button class="btn tab-btn" data-tab="roster" onclick="showTab('roster')">學生名單</button><button class="btn tab-btn" data-tab="attendance" onclick="showTab('attendance')">出缺席</button><button class="btn tab-btn" data-tab="display" onclick="showTab('display')">提醒與時間</button><button class="btn tab-btn" data-tab="backup" onclick="showTab('backup')">離線使用</button></nav>
       <section id="tab-schedule" class="tab-page active">
         <div class="grid2">
           <div class="setting-card"><h2 id="exam-form-title">新增考程</h2><input id="edit-id" type="hidden"><div class="field-group"><label class="field"><span>考程日期</span><input id="exam-date" class="input" type="date"></label><div class="field"><span>考試科目（已排定者不可重複選擇）</span><div id="subject-grid" class="subject-grid"></div></div><label class="field"><span>已選定科目</span><div class="subject-actions"><input id="new-subject" class="input" type="text"><button class="btn" onclick="addSubject()">新增</button><button class="btn" onclick="renameSubject()">修改</button><button class="btn danger" onclick="deleteSelectedSubject()">刪除</button></div></label></div><hr class="field-divider"><div class="field-group"><div class="grid2"><label class="field"><span>開始時間</span><input id="start-time" class="input" type="time" step="300"></label><label class="field"><span>結束時間</span><input id="end-time" class="input" type="time" step="300"></label></div><div class="field"><span>快速設定時長</span><div id="duration-grid" class="duration-grid"></div></div></div><div id="exam-error" class="error hidden"></div><div class="form-actions"><button class="btn" onclick="resetExamForm()">清除</button><button class="btn primary" onclick="saveExam()">儲存考程</button></div></div>
-          <div><div class="setting-card"><h2>上傳 PDF</h2><label class="btn primary file-action">選擇 PDF<input id="schedule-file" type="file" accept=".pdf,application/pdf" hidden onchange="parseScheduleFile(this)"></label><div id="import-status" class="notice import-status hidden"></div><div id="import-preview" class="import-preview"></div></div><div class="setting-card" style="margin-top:16px"><h2>全部考程</h2><div id="admin-schedules"></div></div></div>
+          <div><div class="setting-card" id="schedule-drop"><h2>上傳考程表</h2><p class="notice">支援 PDF 與 Word（.docx）考程時間科目表，也可以直接把檔案拖曳到這張卡片上放開。解析全程在這台電腦完成，不會上傳檔案或使用網路。</p><label class="btn primary file-action">選擇檔案<input id="schedule-file" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden onchange="parseScheduleFile(this)"></label><div id="import-status" class="notice import-status hidden"></div><div id="import-preview" class="import-preview"></div></div><div class="setting-card" style="margin-top:16px"><h2>全部考程</h2><div id="admin-schedules"></div></div></div>
         </div>
       </section>
       <section id="tab-roster" class="tab-page"><div class="grid2"><div class="setting-card"><h2>依序貼上學生名單</h2><p class="notice">請依座號順序貼上學生姓名，座號會自動編上。</p><textarea id="roster-input" class="input roster-input" placeholder="王小明&#10;李小華"></textarea><div class="form-actions"><button class="btn primary" onclick="parseRoster()">套用並自動編號</button></div><div id="roster-error" class="error hidden"></div><hr><h3>新增學生</h3><div style="display:grid;grid-template-columns:90px 1fr auto;gap:8px"><input id="new-student-no" class="input" inputmode="numeric" placeholder="座號"><input id="new-student-name" class="input" placeholder="姓名"><button class="btn" onclick="addStudent()">新增</button></div></div><div class="setting-card"><h2>學生名單（<span id="roster-count">0</span>人）</h2><div id="roster-preview"></div></div></div></section>
@@ -76,7 +76,7 @@
   <div id="absent-modal" class="mini-modal"><div class="mini-panel"><h2 id="absent-modal-title">新增缺席者</h2><input id="manual-absent-id" type="hidden"><div class="grid2"><label class="field"><span>座號</span><input id="manual-absent-no" class="input" inputmode="numeric"></label><label class="field"><span>姓名</span><input id="manual-absent-name" class="input"></label></div><div class="form-actions"><button class="btn" onclick="closeAbsentDialog()">取消</button><button class="btn primary" onclick="saveManualAbsent()">儲存</button></div></div></div>
 
   <script>
-    const APP_VERSION='2.4.3';
+    const APP_VERSION='2.5.0';
     const SUBJECT_ORDER=['國文','中文作文','英文','英聽','數學','歷史','地理','公民','物理','化學','生物','地科','理化'];
     const SUBJECT_ALIASES={'國語文':'國文','國語':'國文','語文':'國文','英語文':'英文','英語':'英文','英文科':'英文','數學科':'數學','中國語文':'國文','公民與社會':'公民','地球科學':'地科'};
     const DURATIONS=[25,40,50,60,70,80,95];
@@ -149,18 +149,499 @@
     function editExam(id){const x=config.schedules.find(x=>String(x.id)===String(id));document.getElementById('exam-form-title').textContent='編輯考程';document.getElementById('edit-id').value=x.id;document.getElementById('exam-date').value=x.date;document.getElementById('start-time').value=x.start;document.getElementById('end-time').value=x.end;selectedSubject=x.subject;document.getElementById('new-subject').value=x.subject;renderSubjects();scrollTo({top:0,behavior:'smooth'})}
     function deleteExam(id){if(!confirm('確定刪除這筆考程？'))return;config.schedules=config.schedules.filter(x=>String(x.id)!==String(id));saveConfig();renderAdminSchedules();renderSubjects()}
     function renderAdminSchedules(){const el=document.getElementById('admin-schedules');el.innerHTML=config.schedules.length?config.schedules.map(x=>`<div class="admin-schedule"><span>${x.date.slice(5)}</span><strong>${escapeHtml(x.subject)}</strong><time>${x.start}－${x.end}</time><span>${minutes(x.end)-minutes(x.start)} 分</span><span><button class="btn" onclick="editExam('${x.id}')">編輯</button> <button class="btn danger" onclick="deleteExam('${x.id}')">刪除</button></span></div>`).join(''):'<div class="empty">尚未建立考程</div>'}
-    async function parseScheduleFile(input){const file=input.files[0],status=document.getElementById('import-status');if(!file)return;status.classList.remove('hidden');status.textContent='正在本機解析 PDF…';importCandidates=[];try{if(file.type!=='application/pdf'&&!file.name.toLowerCase().endsWith('.pdf'))throw Error('僅支援 PDF。');const text=extractPdfText(await file.arrayBuffer());if(text.replace(/\s/g,'').length<20)throw Error('此 PDF 可能是掃描檔或文字編碼無法辨識。請使用可選取文字的 PDF，或改由下方預覽人工確認。');importCandidates=parseScheduleText(text);if(!importCandidates.length)throw Error('未辨識到完整的日期、時間與科目。請確認 PDF 文字可選取，或手動新增考程。');status.textContent=`已辨識 ${importCandidates.length} 筆，低可信欄位已標示，確認後才可匯入。`;renderImportPreview()}catch(e){status.textContent=e.message||'PDF 解析失敗。';document.getElementById('import-preview').innerHTML=''}finally{input.value=''}}
-    function normalizeSubject(text){const clean=text.replace(/[（(][^）)]*(?:組|類)[^）)]*[）)]/g,'').replace(/[：:]/g,' ').trim();for(const [alias,value] of Object.entries(SUBJECT_ALIASES))if(clean.includes(alias))return value;for(const s of SUBJECT_ORDER)if(clean.includes(s))return s;for(const s of config.subjects)if(clean.includes(s))return s;const words=clean.match(/[\u3400-\u9fff]{2,8}/g)||[];return words.find(x=>!/(考試|日期|時間|年級|班級|上午|下午|第一天|第二天|分鐘)/.test(x))||''}
-    function normalizeDate(raw){const nums=raw.match(/\d+/g)?.map(Number)||[];if(nums.length<2)return'';let[y,m,d]=nums.length>=3?nums:[now().getFullYear(),...nums];if(y<1911)y+=1911;const dt=new Date(y,m-1,d);return dt.getFullYear()===y&&dt.getMonth()===m-1&&dt.getDate()===d?`${y}-${pad(m)}-${pad(d)}`:''}
-    function parseScheduleText(text){text=text.replace(/\r/g,'').replace(/[–—~～至]/g,'-').replace(/上午\s*/g,'').replace(/下午\s*/g,'');const lines=text.split('\n').map(x=>x.trim()).filter(Boolean),found=[];let currentDate='';for(const line of lines){const dm=line.match(/(?:民國\s*)?(\d{2,4}[\/.-]\d{1,2}[\/.-]\d{1,2}|\d{1,2}[\/.-]\d{1,2})/);if(dm)currentDate=normalizeDate(dm[1]);const matches=[...line.matchAll(/([01]?\d|2[0-3])[:：]([0-5]\d)\s*[-]\s*([01]?\d|2[0-3])[:：]([0-5]\d)/g)];matches.forEach((match,i)=>{const start=`${pad(match[1])}:${match[2]}`,end=`${pad(match[3])}:${match[4]}`,segment=line.slice(match.index+match[0].length,matches[i+1]?.index??line.length),subject=normalizeSubject(segment)||normalizeSubject(line.slice(0,match.index));found.push({id:`import-${found.length}`,date:currentDate,subject,start,end})})}return found.map((x,i,a)=>{const problems=[];if(!x.date)problems.push('缺少日期');if(!x.subject)problems.push('無法辨識科目');if(minutes(x.end)<=minutes(x.start))problems.push('結束時間錯誤');if(config.schedules.some(s=>s.subject===x.subject))problems.push('科目已存在');if(config.schedules.some(s=>s.date===x.date&&minutes(x.start)<minutes(s.end)&&minutes(x.end)>minutes(s.start)))problems.push('與既有考程重疊');if(a.some((s,j)=>j<i&&s.subject===x.subject))problems.push('檔案內科目重複');return{...x,problems,selected:!problems.length}})}
-    function extractPdfText(buffer){const raw=new TextDecoder('latin1').decode(buffer),parts=[];for(const m of raw.matchAll(/\((?:\\.|[^\\)])*\)/g))parts.push(m[0].slice(1,-1).replace(/\\([nrt()\\])/g,(_,x)=>({n:'\n',r:'',t:'\t'}[x]??x)).replace(/\\(\d{3})/g,(_,x)=>String.fromCharCode(parseInt(x,8))));for(const m of raw.matchAll(/<([0-9A-Fa-f]{4,})>/g)){const hex=m[1];try{const bytes=new Uint8Array(hex.match(/../g).map(x=>parseInt(x,16))),utf16=bytes[0]===254&&bytes[1]===255?new TextDecoder('utf-16be').decode(bytes.slice(2)):new TextDecoder().decode(bytes);if(/[\u3400-\u9fff\d:：\/.-]/.test(utf16))parts.push(utf16)}catch(e){}}return parts.join('\n').replace(/\u0000/g,'')}
-    async function extractImageText(file){if(!('TextDetector'in window))throw Error('此瀏覽器沒有離線圖片文字辨識功能，請先將圖片轉為文字或 CSV 再匯入。');const bitmap=await createImageBitmap(file),blocks=await new TextDetector().detect(bitmap);bitmap.close();return blocks.map(x=>x.rawValue).join('\n')}
-    async function extractXlsxText(buffer){const bytes=new Uint8Array(buffer),view=new DataView(buffer),files=new Map();let eocd=-1;for(let i=bytes.length-22;i>=0;i--)if(view.getUint32(i,true)===0x06054b50){eocd=i;break}if(eocd<0)throw Error('Excel 檔案結構不正確。');let pos=view.getUint32(eocd+16,true),count=view.getUint16(eocd+10,true);for(let n=0;n<count&&view.getUint32(pos,true)===0x02014b50;n++){const method=view.getUint16(pos+10,true),size=view.getUint32(pos+20,true),nameLen=view.getUint16(pos+28,true),extraLen=view.getUint16(pos+30,true),commentLen=view.getUint16(pos+32,true),local=view.getUint32(pos+42,true),name=new TextDecoder().decode(bytes.slice(pos+46,pos+46+nameLen)),localName=view.getUint16(local+26,true),localExtra=view.getUint16(local+28,true),data=bytes.slice(local+30+localName+localExtra,local+30+localName+localExtra+size);if(name==='xl/sharedStrings.xml'||/^xl\/worksheets\/sheet\d+\.xml$/.test(name)){let decoded;if(method===0)decoded=data;else if(method===8&&'DecompressionStream'in window){const stream=new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'));decoded=new Uint8Array(await new Response(stream).arrayBuffer())}else throw Error('此瀏覽器無法解壓縮 Excel，請另存為 CSV。');files.set(name,new TextDecoder().decode(decoded))}pos+=46+nameLen+extraLen+commentLen}const parser=new DOMParser(),shared=[];if(files.has('xl/sharedStrings.xml'))parser.parseFromString(files.get('xl/sharedStrings.xml'),'application/xml').querySelectorAll('si').forEach(x=>shared.push(x.textContent));const rows=[];for(const [name,xml] of files)if(name.includes('/worksheets/'))parser.parseFromString(xml,'application/xml').querySelectorAll('row').forEach(row=>{const cells=[];row.querySelectorAll('c').forEach(c=>{const value=c.querySelector('v')?.textContent||c.querySelector('is')?.textContent||'';cells.push(c.getAttribute('t')==='s'?shared[Number(value)]||'':value)});rows.push(cells.join('\t'))});return rows.join('\n')}
-    function revalidateImports(){importCandidates.forEach((x,i)=>{const problems=[];if(!x.date)problems.push('缺少日期');if(!x.subject)problems.push('無法辨識科目');if(minutes(x.end)<=minutes(x.start))problems.push('結束時間錯誤');if(config.schedules.some(s=>s.subject===x.subject))problems.push('科目已存在');if(config.schedules.some(s=>s.date===x.date&&minutes(x.start)<minutes(s.end)&&minutes(x.end)>minutes(s.start)))problems.push('與既有考程重疊');if(importCandidates.some((s,j)=>j<i&&s.subject===x.subject))problems.push('檔案內科目重複');x.problems=problems;if(problems.length)x.selected=false})}
-    function updateImportCandidate(index,key,value){importCandidates[index][key]=value.trim();revalidateImports();renderImportPreview()}
-    function renderImportPreview(){const el=document.getElementById('import-preview');if(!selectedImportGrade)selectedImportGrade='本班';importCandidates.forEach(x=>x.grade=x.grade||selectedImportGrade);const grades=[...new Set(importCandidates.map(x=>x.grade))],shown=importCandidates.map((x,i)=>({...x,_i:i})).filter(x=>x.grade===selectedImportGrade);el.innerHTML=`<div class="grade-filter"><strong>本班年級</strong><select id="import-grade" class="input">${grades.map(g=>`<option ${g===selectedImportGrade?'selected':''}>${escapeHtml(g)}</option>`).join('')}<option value="__manual">手動指定…</option></select></div>`+shown.map(x=>`<div class="import-row" style="grid-template-columns:auto .7fr 1fr 1fr 1fr 1fr"><input aria-label="選取第${x._i+1}筆" type="checkbox" ${x.selected?'checked':''} ${x.problems.length?'disabled':''} onchange="importCandidates[${x._i}].selected=this.checked"><input aria-label="年級" class="input" value="${escapeHtml(x.grade)}" onchange="updateImportGrade(${x._i},this.value)"><input aria-label="日期" class="input" type="date" value="${escapeHtml(x.date)}" onchange="updateImportCandidate(${x._i},'date',this.value)"><input aria-label="科目" class="input" value="${escapeHtml(x.subject)}" onchange="updateImportCandidate(${x._i},'subject',this.value)"><input aria-label="開始時間" class="input" type="time" value="${x.start}" onchange="updateImportCandidate(${x._i},'start',this.value)"><span><input aria-label="結束時間" class="input" type="time" value="${x.end}" onchange="updateImportCandidate(${x._i},'end',this.value)"><small style="display:block;color:${x.problems.length?'var(--red)':'var(--green)'}">${escapeHtml(x.problems.join('、')||'可匯入')}</small></span></div>`).join('')+`<div class="form-actions"><button class="btn primary" onclick="importParsedSchedules()">匯入選取考程</button></div>`;document.getElementById('import-grade').onchange=function(){if(this.value==='__manual'){const g=prompt('請輸入本班年級，例如：高一或國八');if(g){selectedImportGrade=g.trim();importCandidates.forEach(x=>{if(x.grade==='本班')x.grade=selectedImportGrade})}}else selectedImportGrade=this.value;renderImportPreview()}}
-    function updateImportGrade(index,value){importCandidates[index].grade=value.trim()||'未辨識';selectedImportGrade=importCandidates[index].grade;renderImportPreview()}
-    function importParsedSchedules(){const selected=importCandidates.filter(x=>x.grade===selectedImportGrade&&x.selected&&!x.problems.length);if(!selected.length)return alert('沒有可匯入的考程。');if(!confirm(`確定匯入 ${selected.length} 筆「${selectedImportGrade}」考程？`))return;for(const x of selected){if(!config.subjects.includes(x.subject))config.subjects.push(x.subject);config.schedules.push({id:`${Date.now()}-${Math.random().toString(36).slice(2)}`,date:x.date,subject:x.subject,start:x.start,end:x.end})}config.subjects.sort((a,b)=>subjectRank(a)-subjectRank(b));config.schedules.sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));saveConfig();importCandidates=[];selectedImportGrade='';document.getElementById('import-preview').innerHTML='';document.getElementById('import-status').textContent=`已成功匯入 ${selected.length} 筆考程。`;renderAdmin()}
+    /* ===== 上傳考程表匯入：Word(.docx) 與 PDF 共用同一套「表格網格 → 候選考程」流程 ===== */
+    const IMPORT_LABELS=['日期','年級','時間','科目','上午','下午','備註'];
+    const SUBJECT_NOTE=/(自習|放學|休息|用餐|午餐|考完|結束|接著|備註|分鐘|min|打掃)/;
+    const CJK_TIME=/\d{1,2}[:：]\d{2}/;
+    const PROSE=/[。；，、「」]/;
+    const tidy=v=>String(v==null?'':v).replace(/[\s　]/g,'');
+    function guessYearContext(fileName,createdIso){const m=String(fileName||'').match(/(?:^|[^\d])(\d{3})([12])(?=\D|$)/);if(m)return{kind:'term',base:Number(m[1])+1911,term:Number(m[2])};const created=createdIso?new Date(createdIso):null;return{kind:'ref',ref:created&&!isNaN(created)?created:now()}}
+    function resolveYear(month,ctx){if(!ctx)return now().getFullYear();if(ctx.kind==='term')return ctx.term===1?(month>=8?ctx.base:ctx.base+1):ctx.base+1;const ref=ctx.ref,y=ref.getFullYear();for(const cand of[y,y+1,y-1]){const diff=(new Date(cand,month-1,1)-ref)/86400000;if(diff>=-90&&diff<=305)return cand}return y}
+    function isoDate(y,m,d){if(y<1911)y+=1911;const dt=new Date(y,m-1,d);return dt.getFullYear()===y&&dt.getMonth()===m-1&&dt.getDate()===d?`${y}-${pad(m)}-${pad(d)}`:''}
+    function tableDateToKey(raw,ctx){const t=tidy(raw);let m=t.match(/(\d{4})[\/.\-年](\d{1,2})[\/.\-月](\d{1,2})/);if(m)return isoDate(Number(m[1]),Number(m[2]),Number(m[3]));m=t.match(/(\d{1,2})月(\d{1,2})日?/);if(m)return isoDate(resolveYear(Number(m[1]),ctx),Number(m[1]),Number(m[2]));m=t.match(/(?:^|\D)(\d{1,2})[\/.\-](\d{1,2})(?!\d)/);if(m)return isoDate(resolveYear(Number(m[1]),ctx),Number(m[1]),Number(m[2]));return''}
+    function parseTimeRange(raw){let t=tidy(raw).replace(/[～~－—–至]/g,'-').replace(/：/g,':');t=t.replace(/[（(][^）)]*[）)]/g,x=>x.includes(':')?x:'');const hits=[];for(const m of t.matchAll(/(\d{1,2}):(\d{2})/g)){const h=Number(m[1]),mi=Number(m[2]);if(h<24&&mi<60)hits.push(`${pad(h)}:${m[2]}`)}if(hits.length>=2)return{start:hits[0],end:hits[1],timeProblem:''};if(hits.length===1)return{start:hits[0],end:'',timeProblem:'時間錯誤'};return{start:'',end:'',timeProblem:'時間錯誤'}}
+    function cleanTableSubject(raw){let t=String(raw==null?'':raw).replace(/　/g,' ').trim();t=t.replace(/[（(]([^）)]*)[）)]/g,(all,inner)=>SUBJECT_NOTE.test(inner)?'':all);t=t.replace(/[\s　]/g,'');return SUBJECT_ALIASES[t]||t}
+    function isStudyOnly(text){const bare=String(text||'').replace(/[（(][^）)]*[）)]/g,'');return !bare||/^(自習|無|休息|放學|午餐|用餐|[-－—])$/.test(bare)}
+    function gridHasLabel(row,upto,word){const n=Math.max(1,upto);for(let i=0;i<n&&i<row.length;i++)if(tidy(row[i]).includes(word))return true;return false}
+    function buildCandidatesFromGrid(grid,ctx){
+      if(!grid||!grid.length)return[];
+      const dateIndex=grid.findIndex(r=>gridHasLabel(r,4,'日期')||r.some(c=>/\d{1,2}月\d{1,2}日/.test(tidy(c))));
+      if(dateIndex<0)return[];
+      const dateRow=grid[dateIndex],width=Math.max(...grid.map(r=>r.length));
+      let first=-1;for(let s=0;s<dateRow.length;s++)if(tableDateToKey(dateRow[s],ctx)){first=s;break}
+      if(first<0)return[];
+      const after=grid.slice(dateIndex+1);
+      const gradeRow=after.length&&gridHasLabel(after[0],first,'年級')?after[0]:null;
+      const body=gradeRow?after.slice(1):after;
+      const dates=[],grades=[];
+      for(let s=first;s<width;s++){dates[s]=tableDateToKey(dateRow[s],ctx);grades[s]=gradeRow?tidy(gradeRow[s]).replace('年級',''):''}
+      const out=[],seen=new Set();
+      for(let i=0;i<body.length;i++){
+        if(!gridHasLabel(body[i],first,'時間'))continue;
+        let j=i+1;
+        while(j<body.length&&!gridHasLabel(body[j],first,'科目')&&!gridHasLabel(body[j],first,'時間'))j++;
+        if(j>=body.length||!gridHasLabel(body[j],first,'科目'))continue;
+        const timeRow=body[i],subjectRow=body[j];
+        for(let s=first;s<width;s++){
+          const subject=cleanTableSubject(subjectRow[s]);
+          if(isStudyOnly(subject))continue;
+          const {start,end,timeProblem}=parseTimeRange(timeRow[s]);
+          const grade=grades[s]||'',date=dates[s]||'',key=`${grade}|${date}|${start}|${end}|${subject}`;
+          if(seen.has(key))continue;seen.add(key);
+          out.push({date,subject,start,end,grade,timeProblem});
+        }
+        i=j;
+      }
+      return out;
+    }
+    function candidateProblems(x,i,list){
+      const problems=[];
+      if(!x.date)problems.push('缺少日期');
+      if(!x.subject)problems.push('無法辨識科目');
+      if(x.timeProblem)problems.push(x.timeProblem);
+      else if(!x.start||!x.end)problems.push('時間錯誤');
+      else if(minutes(x.end)<=minutes(x.start))problems.push('結束時間錯誤');
+      if(config.schedules.some(s=>s.subject===x.subject))problems.push('科目已存在');
+      if(x.date&&x.start&&x.end&&config.schedules.some(s=>s.date===x.date&&minutes(x.start)<minutes(s.end)&&minutes(x.end)>minutes(s.start)))problems.push('與既有考程重疊');
+      const sameGrade=(a,b)=>(a.grade||'')===(b.grade||'');
+      if(list.some((s,j)=>j<i&&sameGrade(s,x)&&s.subject===x.subject))problems.push('檔案內科目重複');
+      if(x.date&&x.start&&x.end&&list.some((s,j)=>j<i&&sameGrade(s,x)&&s.date===x.date&&s.start&&s.end&&minutes(x.start)<minutes(s.end)&&minutes(x.end)>minutes(s.start)))problems.push('檔案內時段重疊');
+      return problems;
+    }
+    function finalizeCandidates(list){list.forEach(x=>{if(!x.grade)x.grade='本班'});return list.map((x,i,a)=>{const problems=candidateProblems(x,i,a);return{id:`import-${i}`,...x,problems,selected:!problems.length}})}
+    function revalidateImports(){importCandidates.forEach((x,i)=>{const problems=candidateProblems(x,i,importCandidates);x.problems=problems;if(problems.length)x.selected=false})}
+    /* ---- ZIP（.docx／.xlsx 共用） ---- */
+    async function inflateBytes(data,format){if(!('DecompressionStream'in window))throw Error('此瀏覽器不支援內建解壓縮，無法解析 Word 檔，請改用 PDF。');const stream=new Blob([data]).stream().pipeThrough(new DecompressionStream(format));return new Uint8Array(await new Response(stream).arrayBuffer())}
+    async function unzipEntries(buffer,wanted){
+      const bytes=new Uint8Array(buffer),view=new DataView(buffer),files=new Map();
+      let eocd=-1;for(let i=bytes.length-22;i>=0;i--)if(view.getUint32(i,true)===0x06054b50){eocd=i;break}
+      if(eocd<0)throw Error('檔案不是有效的 Word／Office 壓縮格式。');
+      let pos=view.getUint32(eocd+16,true);const count=view.getUint16(eocd+10,true);
+      for(let n=0;n<count&&pos+46<=bytes.length&&view.getUint32(pos,true)===0x02014b50;n++){
+        const method=view.getUint16(pos+10,true),size=view.getUint32(pos+20,true),nameLen=view.getUint16(pos+28,true),
+          extraLen=view.getUint16(pos+30,true),commentLen=view.getUint16(pos+32,true),local=view.getUint32(pos+42,true),
+          name=new TextDecoder().decode(bytes.slice(pos+46,pos+46+nameLen));
+        if(wanted(name)){const ln=view.getUint16(local+26,true),le=view.getUint16(local+28,true),start=local+30+ln+le,data=bytes.slice(start,start+size);
+          files.set(name,method===0?data:await inflateBytes(data,'deflate-raw'))}
+        pos+=46+nameLen+extraLen+commentLen;
+      }
+      return files;
+    }
+    /* ---- 第 1 階段：Word(.docx) ---- */
+    const W_NS='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+    function wChildren(node,name){const out=[];for(const child of node.childNodes)if(child.nodeType===1&&child.localName===name&&child.namespaceURI===W_NS)out.push(child);return out}
+    async function extractDocxTables(buffer){
+      const files=await unzipEntries(buffer,n=>n==='word/document.xml'||n==='docProps/core.xml');
+      if(!files.has('word/document.xml'))throw Error('這不是有效的 Word（.docx）文件。');
+      const decoder=new TextDecoder(),doc=new DOMParser().parseFromString(decoder.decode(files.get('word/document.xml')),'application/xml');
+      if(doc.getElementsByTagName('parsererror').length)throw Error('Word 文件內容無法解析。');
+      let created='';
+      if(files.has('docProps/core.xml')){const m=decoder.decode(files.get('docProps/core.xml')).match(/<dcterms:created[^>]*>([^<]+)</);if(m)created=m[1]}
+      const tables=[];
+      for(const tbl of [...doc.getElementsByTagNameNS(W_NS,'tbl')]){
+        const rows=[];
+        for(const tr of wChildren(tbl,'tr')){
+          const tcs=wChildren(tr,'tc');
+          if(tcs.length<=1)continue;/* 整列合併的備註／試場規則列，不是考程資料 */
+          const slots=[];
+          for(const tc of tcs){
+            let span=1;const pr=wChildren(tc,'tcPr')[0];
+            if(pr){const gs=wChildren(pr,'gridSpan')[0];if(gs)span=Math.max(1,Number(gs.getAttributeNS(W_NS,'val'))||1)}
+            const text=[...tc.getElementsByTagNameNS(W_NS,'t')].map(t=>t.textContent||'').join('');
+            for(let i=0;i<span;i++)slots.push(text);
+          }
+          rows.push(slots);
+        }
+        if(rows.length)tables.push(rows);
+      }
+      return {tables,created};
+    }
+    function looksLikeScheduleTable(rows){
+      const flat=rows.flat().map(c=>String(c||''));
+      const hasDate=flat.some(c=>/\d{1,2}\s*月\s*\d{1,2}\s*日/.test(c)||/\d{1,2}[\/.\-]\d{1,2}/.test(c));
+      const hasTime=flat.some(c=>CJK_TIME.test(c));
+      return hasDate&&hasTime;
+    }
+    async function parseDocxSchedule(file,report){
+      await report('正在解壓縮 Word 檔…');
+      const {tables,created}=await extractDocxTables(await file.arrayBuffer());
+      await report('正在解析表格結構…');
+      const picked=tables.filter(looksLikeScheduleTable);
+      if(!picked.length)throw Error('Word 檔裡找不到同時含日期、時間與科目的考程表格。');
+      await report('正在整理考程…');
+      const ctx=guessYearContext(file.name,created),out=[];
+      for(const rows of picked)out.push(...buildCandidatesFromGrid(rows,ctx));
+      return out;
+    }
+    /* ---- 第 2 階段：PDF ---- */
+    /* TextDecoder('latin1') 其實是 windows-1252，0x80～0x9F 不是一對一，位元組無法還原；PDF 二進位內容必須用這個逐位元組對映 */
+    function bytesToLatin1(source){const bytes=source instanceof Uint8Array?source:new Uint8Array(source);let out='';const chunk=0x8000;for(let i=0;i<bytes.length;i+=chunk)out+=String.fromCharCode.apply(null,bytes.subarray(i,i+chunk));return out}
+    async function pdfInflate(bytes){for(const fmt of['deflate','deflate-raw']){try{return await inflateBytes(bytes,fmt)}catch(e){}}return null}
+    function pdfStreamPart(body,objs){
+      const i=body.indexOf('stream');if(i<0)return null;
+      let j=i+6;if(body[j]==='\r')j++;if(body[j]==='\n')j++;
+      const dict=body.slice(0,i);let len=null;
+      let m=dict.match(/\/Length\s+(\d+)(?!\s+\d+\s+R)/);
+      if(m)len=Number(m[1]);
+      else{m=dict.match(/\/Length\s+(\d+)\s+\d+\s+R/);if(m&&objs.has(Number(m[1]))){const n=objs.get(Number(m[1])).match(/\d+/);if(n)len=Number(n[0])}}
+      let end;
+      if(len!=null&&j+len<=body.length)end=j+len;
+      else{end=body.lastIndexOf('endstream');while(end>j&&/[\r\n\t ]/.test(body[end-1]))end--}
+      const s=body.slice(j,end),bytes=new Uint8Array(s.length);
+      for(let k=0;k<s.length;k++)bytes[k]=s.charCodeAt(k)&255;
+      return {bytes,dict};
+    }
+    async function pdfStreamData(body,objs){
+      const part=pdfStreamPart(body,objs);if(!part)return null;
+      if(!/\/Filter/.test(part.dict))return part.bytes;
+      if(!/FlateDecode/.test(part.dict))return null;
+      return await pdfInflate(part.bytes);
+    }
+    async function pdfLoadObjects(buffer){
+      const raw=bytesToLatin1(buffer),objs=new Map();
+      for(const m of raw.matchAll(/(\d+)\s+\d+\s+obj\b/g)){const end=raw.indexOf('endobj',m.index+m[0].length);if(end<0)continue;objs.set(Number(m[1]),raw.slice(m.index+m[0].length,end))}
+      for(const [num,body] of [...objs]){
+        if(!/\/ObjStm/.test(body))continue;
+        const data=await pdfStreamData(body,objs);if(!data)continue;
+        const n=Number(body.match(/\/N\s+(\d+)/)?.[1]||0),firstOff=Number(body.match(/\/First\s+(\d+)/)?.[1]||0);
+        const text=bytesToLatin1(data),header=text.slice(0,firstOff).trim().split(/\s+/).map(Number);
+        for(let i=0;i<n;i++){
+          const onum=header[2*i],off=header[2*i+1];
+          if(!Number.isFinite(onum)||!Number.isFinite(off))continue;
+          const next=i+1<n?firstOff+header[2*i+3]:text.length,existing=objs.get(onum);
+          if(existing===undefined||!/\bstream\b/.test(existing))objs.set(onum,text.slice(firstOff+off,next));
+        }
+      }
+      return objs;
+    }
+    function pdfDictSlice(text,key){
+      const i=text.indexOf(key);if(i<0)return'';
+      const j=text.indexOf('<<',i);if(j<0)return'';
+      let depth=0,k=j;
+      while(k<text.length){
+        if(text.startsWith('<<',k)){depth++;k+=2;continue}
+        if(text.startsWith('>>',k)){depth--;k+=2;if(!depth)return text.slice(j,k);continue}
+        k++;
+      }
+      return'';
+    }
+    function pdfSubDict(objs,text,key){const m=text.match(new RegExp(key.replace('/','\\/')+'\\s*(\\d+)\\s+\\d+\\s+R'));if(m)return objs.get(Number(m[1]))||'';return pdfDictSlice(text,key)}
+    function pdfHexToStr(h){if(h.length<4)return String.fromCharCode(parseInt(h,16)||0);let out='';for(let i=0;i+4<=h.length;i+=4)out+=String.fromCharCode(parseInt(h.slice(i,i+4),16));return out}
+    function pdfParseCMap(text){
+      const map=new Map();
+      for(const block of text.matchAll(/beginbfchar([\s\S]*?)endbfchar/g))
+        for(const m of block[1].matchAll(/<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>/g))map.set(parseInt(m[1],16),pdfHexToStr(m[2]));
+      for(const block of text.matchAll(/beginbfrange([\s\S]*?)endbfrange/g))
+        for(const m of block[1].matchAll(/<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>\s*(\[[^\]]*\]|<[0-9A-Fa-f]+>)/g)){
+          const lo=parseInt(m[1],16),hi=parseInt(m[2],16),dst=m[3];
+          if(dst[0]==='['){let n=0;for(const it of dst.matchAll(/<([0-9A-Fa-f]+)>/g)){if(lo+n<=hi)map.set(lo+n,pdfHexToStr(it[1]));n++}}
+          else{const base=parseInt(dst.slice(1,-1),16);for(let c=lo;c<=hi&&c-lo<65536;c++)map.set(c,String.fromCharCode(base+(c-lo)))}
+        }
+      return map;
+    }
+    function pdfParseWidths(text){
+      const m=text.match(/\/W\s*\[/);const out=new Map();if(!m)return out;
+      let i=m.index+m[0].length-1,depth=0,j=i;
+      while(j<text.length){if(text[j]==='[')depth++;else if(text[j]===']'){depth--;if(!depth)break}j++}
+      const toks=text.slice(i+1,j).match(/\[[^\]]*\]|[-+]?\d+\.?\d*/g)||[];
+      let k=0;
+      while(k<toks.length){
+        if(toks[k][0]==='['){k++;continue}
+        const first=Math.trunc(Number(toks[k]));
+        if(k+1<toks.length&&toks[k+1][0]==='['){(toks[k+1].match(/[-+]?\d+\.?\d*/g)||[]).forEach((w,n)=>out.set(first+n,Number(w)));k+=2}
+        else if(k+2<toks.length){const last=Math.trunc(Number(toks[k+1])),w=Number(toks[k+2]);if(last>=first&&last-first<70000)for(let c=first;c<=last;c++)out.set(c,w);k+=3}
+        else break;
+      }
+      return out;
+    }
+    async function pdfLoadFonts(objs,resources){
+      const dict=pdfSubDict(objs,resources,'/Font'),fonts=new Map();
+      for(const m of dict.matchAll(/\/([A-Za-z0-9]+)\s+(\d+)\s+\d+\s+R/g)){
+        const body=objs.get(Number(m[2]));if(body===undefined)continue;
+        const two=/\/Subtype\s*\/Type0/.test(body)||/\/Identity-H/.test(body);
+        let cmap=null,widths=new Map(),dw=two?1000:500;
+        const tu=body.match(/\/ToUnicode\s+(\d+)\s+\d+\s+R/);
+        if(tu&&objs.has(Number(tu[1]))){const data=await pdfStreamData(objs.get(Number(tu[1])),objs);if(data)cmap=pdfParseCMap(bytesToLatin1(data))}
+        if(two){
+          const d=body.match(/\/DescendantFonts\s*\[?\s*(\d+)\s+\d+\s+R/);
+          const desc=d&&objs.has(Number(d[1]))?objs.get(Number(d[1])):pdfDictSlice(body,'/DescendantFonts');
+          const dwm=desc.match(/\/DW\s+(\d+)/);if(dwm)dw=Number(dwm[1]);
+          widths=pdfParseWidths(desc);
+        }else{
+          const fc=Number(body.match(/\/FirstChar\s+(\d+)/)?.[1]||0);
+          const wm=body.match(/\/Widths\s*(?:(\d+)\s+\d+\s+R|\[([^\]]*)\])/);
+          const arr=wm?(wm[1]?(objs.get(Number(wm[1]))||''):wm[2]):'';
+          (arr.match(/[-+]?\d+\.?\d*/g)||[]).forEach((w,n)=>widths.set(fc+n,Number(w)));
+          const mw=body.match(/\/MissingWidth\s+(\d+)/);if(mw)dw=Number(mw[1]);
+        }
+        fonts.set(m[1],{two,cmap,widths,dw});
+      }
+      return fonts;
+    }
+    const PDF_ESCAPES={n:'\n',r:'\r',t:'\t',b:'\b',f:'\f','(':'(',')':')','\\':'\\'};
+    function pdfLiteral(s){
+      let out='',i=0;
+      while(i<s.length){
+        if(s[i]==='\\'&&i+1<s.length){
+          const c=s[i+1];
+          if(PDF_ESCAPES[c]!==undefined){out+=PDF_ESCAPES[c];i+=2;continue}
+          const oct=s.slice(i+1).match(/^[0-7]{1,3}/);
+          if(oct){out+=String.fromCharCode(parseInt(oct[0],8));i+=1+oct[0].length;continue}
+          i+=2;continue;
+        }
+        out+=s[i];i++;
+      }
+      return out;
+    }
+    function pdfTokenize(s){
+      const out=[];let i=0;
+      while(i<s.length){
+        const c=s[i];
+        if(c==='%'){while(i<s.length&&s[i]!=='\n')i++;continue}
+        if(c==='('){
+          let depth=1,j=i+1,buf='';
+          while(j<s.length&&depth){
+            const d=s[j];
+            if(d==='\\'){buf+=d+(s[j+1]||'');j+=2;continue}
+            if(d==='('){depth++;buf+=d;j++;continue}
+            if(d===')'){depth--;if(!depth){j++;break}buf+=d;j++;continue}
+            buf+=d;j++;
+          }
+          out.push({t:'str',v:pdfLiteral(buf)});i=j;continue;
+        }
+        if(c==='<'&&s[i+1]==='<'){out.push({t:'op',v:'<<'});i+=2;continue}
+        if(c==='>'&&s[i+1]==='>'){out.push({t:'op',v:'>>'});i+=2;continue}
+        if(c==='<'){const j=s.indexOf('>',i);const end=j<0?s.length:j;out.push({t:'hex',v:s.slice(i+1,end).replace(/[\s]/g,'')});i=end+1;continue}
+        if(c==='['||c===']'){out.push({t:'op',v:c});i++;continue}
+        if(c==='/'){let j=i+1;while(j<s.length&&!/[\s\/\[\]<>(){}%]/.test(s[j]))j++;out.push({t:'name',v:s.slice(i+1,j)});i=j;continue}
+        if(/[-+.\d]/.test(c)){let j=i;while(j<s.length&&/[-+.\d]/.test(s[j]))j++;out.push({t:'num',v:parseFloat(s.slice(i,j))||0});i=j;continue}
+        if(/\s/.test(c)){i++;continue}
+        {let j=i;while(j<s.length&&!/[\s\/\[\]<>(){}%]/.test(s[j]))j++;if(j===i)j++;out.push({t:'op',v:s.slice(i,j)});i=j;continue}
+      }
+      return out;
+    }
+    const pdfMul=(a,b)=>[a[0]*b[0]+a[1]*b[2],a[0]*b[1]+a[1]*b[3],a[2]*b[0]+a[3]*b[2],a[2]*b[1]+a[3]*b[3],a[4]*b[0]+a[5]*b[2]+b[4],a[4]*b[1]+a[5]*b[3]+b[5]];
+    function pdfCodes(tok,two){
+      const out=[];
+      if(tok.t==='hex'){const step=two?4:2;for(let i=0;i+step<=tok.v.length;i+=step)out.push(parseInt(tok.v.slice(i,i+step),16))}
+      else if(two){for(let i=0;i+1<tok.v.length;i+=2)out.push((tok.v.charCodeAt(i)<<8)|tok.v.charCodeAt(i+1))}
+      else for(let i=0;i<tok.v.length;i++)out.push(tok.v.charCodeAt(i));
+      return out;
+    }
+    function pdfScan(content,fonts){
+      const items=[],rects=[];
+      let tm=[1,0,0,1,0,0],tlm=tm.slice(),cm=[1,0,0,1,0,0],leading=0,font=null,size=12,tc=0,tw=0,th=1;
+      const stack=[];let pending=[],ops=[];
+      for(const tok of pdfTokenize(content)){
+        if(tok.t!=='op'){ops.push(tok);continue}
+        const op=tok.v;
+        if(op==='['||op===']'||op==='<<'||op==='>>')continue;
+        const nums=ops.filter(o=>o.t==='num').map(o=>o.v);
+        if(op==='Tf'){const names=ops.filter(o=>o.t==='name');if(names.length)font=fonts.get(names[names.length-1].v)||null;if(nums.length)size=Math.abs(nums[nums.length-1])}
+        else if(op==='Tm'&&nums.length>=6){tm=nums.slice(-6);tlm=tm.slice()}
+        else if((op==='Td'||op==='TD')&&nums.length>=2){if(op==='TD')leading=-nums[nums.length-1];tlm=pdfMul([1,0,0,1,nums[nums.length-2],nums[nums.length-1]],tlm);tm=tlm.slice()}
+        else if(op==='TL'&&nums.length)leading=nums[nums.length-1];
+        else if(op==='Tc'&&nums.length)tc=nums[nums.length-1];
+        else if(op==='Tw'&&nums.length)tw=nums[nums.length-1];
+        else if(op==='Tz'&&nums.length)th=nums[nums.length-1]/100;
+        else if(op==='T*'){tlm=pdfMul([1,0,0,1,0,-leading],tlm);tm=tlm.slice()}
+        else if(op==='cm'&&nums.length>=6)cm=pdfMul(nums.slice(-6),cm);
+        else if(op==='q')stack.push(cm.slice());
+        else if(op==='Q')cm=stack.pop()||cm;
+        else if(op==='BT'){tm=[1,0,0,1,0,0];tlm=tm.slice()}
+        else if(op==='re'&&nums.length>=4){
+          const [x,y,w,h]=nums.slice(-4),p0=pdfMul([1,0,0,1,x,y],cm),p1=pdfMul([1,0,0,1,x+w,y+h],cm);
+          pending.push({x:Math.min(p0[4],p1[4]),y:Math.min(p0[5],p1[5]),w:Math.abs(p1[4]-p0[4]),h:Math.abs(p1[5]-p0[5])});
+        }
+        else if(op==='f'||op==='f*'||op==='B'||op==='B*'||op==='b'||op==='b*'||op==='S'||op==='s'){rects.push(...pending);pending=[]}
+        else if(op==='n')pending=[];
+        else if(op==='Tj'||op==='TJ'||op==="'"||op==='"'){
+          if(op==="'"||op==='"'){tlm=pdfMul([1,0,0,1,0,-leading],tlm);tm=tlm.slice()}
+          const two=font?font.two:false;let text='',adv=0;
+          for(const o of ops){
+            if(o.t==='num')adv+=-o.v/1000*size*th;
+            else if(o.t==='str'||o.t==='hex'){
+              for(const code of pdfCodes(o,two)){
+                const mapped=font&&font.cmap?font.cmap.get(code):undefined;
+                text+=mapped!==undefined?mapped:(!two&&code>=32&&code<127?String.fromCharCode(code):'');
+                const w=(font&&font.widths.has(code)?font.widths.get(code):(font?font.dw:500))/1000;
+                adv+=(w*size+tc+(code===32?tw:0))*th;
+              }
+            }
+          }
+          if(text.trim()){const d=pdfMul(tm,cm),scale=Math.hypot(d[0],d[1])||1;items.push({x:d[4],y:d[5],size:size*scale,w:adv*scale,text})}
+          tm=pdfMul([1,0,0,1,adv,0],tm);
+        }
+        ops=[];
+      }
+      return {items,rects};
+    }
+    function pdfCluster(values,tol){const sorted=[...values].sort((a,b)=>a-b),groups=[];for(const v of sorted){const g=groups[groups.length-1];if(g&&v-g[g.length-1]<=tol)g.push(v);else groups.push([v])}return groups.map(g=>g.reduce((a,b)=>a+b,0)/g.length)}
+    function pdfGridFromRules(items,rects){
+      const vrules=[],hrules=[];
+      for(const r of rects){
+        if(r.w<=3.5&&r.h>=5)vrules.push({x:r.x+r.w/2,y0:r.y,y1:r.y+r.h});
+        else if(r.h<=3.5&&r.w>=5)hrules.push(r.y+r.h/2);
+      }
+      if(vrules.length<3||hrules.length<3)return null;
+      const colx=pdfCluster(vrules.map(v=>v.x),3),rowy=pdfCluster(hrules,3).sort((a,b)=>b-a);
+      if(colx.length<3||rowy.length<3)return null;
+      const ncol=colx.length-1,grid=[];
+      for(let r=0;r+1<rowy.length;r++){
+        const top=rowy[r],bot=rowy[r+1];
+        if(top-bot<4)continue;
+        const need=(top-bot)*0.5,present=new Array(ncol+1).fill(true);
+        for(let k=1;k<ncol;k++)present[k]=vrules.some(v=>Math.abs(v.x-colx[k])<=3&&Math.min(v.y1,top)-Math.max(v.y0,bot)>=need);
+        const buckets=Array.from({length:ncol},()=>[]);
+        for(const it of items){
+          if(!(it.y>=bot-1&&it.y<top-1))continue;
+          const cx=it.x+1;let c=-1;
+          for(let k=0;k<ncol;k++)if(colx[k]<=cx&&cx<colx[k+1]){c=k;break}
+          if(c<0)c=cx<colx[0]?0:ncol-1;
+          buckets[c].push(it);
+        }
+        const cells=new Array(ncol).fill('');
+        let k=0;
+        while(k<ncol){
+          let j=k;while(j+1<ncol&&!present[j+1])j++;
+          const bucket=[];for(let c=k;c<=j;c++)bucket.push(...buckets[c]);
+          bucket.sort((a,b)=>b.y-a.y||a.x-b.x);
+          const sublines=[];
+          for(const it of bucket){
+            const ln=sublines.find(l=>Math.abs(l.y-it.y)<=Math.max(2,it.size*0.4));
+            if(ln)ln.items.push(it);else sublines.push({y:it.y,items:[it]});
+          }
+          sublines.sort((a,b)=>b.y-a.y);
+          sublines.forEach(l=>l.items.sort((a,b)=>a.x-b.x));
+          const text=sublines.map(l=>l.items.map(i=>i.text).join('')).join('');
+          for(let c=k;c<=j;c++)cells[c]=text;
+          k=j+1;
+        }
+        grid.push(cells);
+      }
+      return grid;
+    }
+    function pdfGridFromLayout(items){
+      const usable=items.filter(it=>it.text.trim()&&!it.text.includes('http')&&!(it.text.length>=8&&PROSE.test(it.text)));
+      if(!usable.length)return null;
+      const lines=[];
+      for(const it of [...usable].sort((a,b)=>b.y-a.y||a.x-b.x)){
+        const ln=lines.find(l=>Math.abs(l.y-it.y)<=Math.max(2,it.size*0.4));
+        if(ln)ln.items.push(it);else lines.push({y:it.y,items:[it]});
+      }
+      lines.sort((a,b)=>b.y-a.y);
+      if(lines.length<3)return null;
+      const gaps=[];for(let i=1;i<lines.length;i++)gaps.push(lines[i-1].y-lines[i].y);
+      gaps.sort((a,b)=>a-b);
+      const limit=(gaps[Math.floor(gaps.length/2)]||12)*1.6;
+      const bands=[[lines[0]]];
+      for(let i=1;i<lines.length;i++){
+        if(lines[i-1].y-lines[i].y<=limit)bands[bands.length-1].push(lines[i]);
+        else bands.push([lines[i]]);
+      }
+      const anchors=pdfCluster(usable.map(it=>it.x),10);
+      return bands.map(band=>{
+        const cells=new Array(anchors.length).fill('');
+        const pool=band.flatMap(l=>l.items).sort((a,b)=>b.y-a.y||a.x-b.x);
+        for(const it of pool){
+          let best=0,bd=Infinity;
+          anchors.forEach((v,i)=>{const d=Math.abs(v-it.x);if(d<bd){bd=d;best=i}});
+          cells[best]+=it.text;
+        }
+        return cells;
+      });
+    }
+    async function parsePdfSchedule(file,report){
+      await report('正在解壓縮 PDF 內容…');
+      const objs=await pdfLoadObjects(await file.arrayBuffer());
+      const pages=[];
+      for(const [num,body] of objs)if(/\/Type\s*\/Page(?![a-zA-Z])/.test(body))pages.push(body);
+      if(!pages.length)throw Error('這個 PDF 沒有可解析的頁面內容。');
+      await report('正在還原文字與字型編碼…');
+      const items=[],rects=[];
+      for(const page of pages){
+        const fonts=await pdfLoadFonts(objs,pdfSubDict(objs,page,'/Resources'));
+        let contentIds=[...page.matchAll(/\/Contents\s+(\d+)\s+\d+\s+R/g)].map(m=>Number(m[1]));
+        if(!contentIds.length){const arr=page.match(/\/Contents\s*\[([^\]]*)\]/);if(arr)contentIds=[...arr[1].matchAll(/(\d+)\s+\d+\s+R/g)].map(m=>Number(m[1]))}
+        let text='';
+        for(const id of contentIds){const data=await pdfStreamData(objs.get(id)||'',objs);if(data)text+=bytesToLatin1(data)+'\n'}
+        if(!text)continue;
+        const scanned=pdfScan(text,fonts);
+        items.push(...scanned.items);rects.push(...scanned.rects);
+      }
+      if(!items.length)throw Error('這個 PDF 取不到任何文字，可能是掃描檔（圖片）。目前尚未內建 OCR，請改用 Word 檔或手動新增考程。');
+      await report('正在依座標重建表格…');
+      const ctx=guessYearContext(file.name,'');
+      let grid=pdfGridFromRules(items,rects),out=grid?buildCandidatesFromGrid(grid,ctx):[];
+      if(!out.length){grid=pdfGridFromLayout(items);if(grid)out=buildCandidatesFromGrid(grid,ctx)}
+      await report('正在整理考程…');
+      return out;
+    }
+    /* ---- 第 0 階段：上傳入口（點選與拖放共用） ---- */
+    function parseScheduleFile(input){const file=input.files[0];input.value='';if(file)handleScheduleFile(file)}
+    async function handleScheduleFile(file){
+      const status=document.getElementById('import-status'),preview=document.getElementById('import-preview');
+      if(!file)return;
+      status.classList.remove('hidden');preview.innerHTML='';
+      importCandidates=[];selectedImportGrade='';
+      const name=String(file.name||'').toLowerCase();
+      const report=async text=>{status.textContent=text;await new Promise(r=>setTimeout(r,0))};
+      try{
+        let list;
+        if(name.endsWith('.docx'))list=await parseDocxSchedule(file,report);
+        else if(name.endsWith('.pdf'))list=await parsePdfSchedule(file,report);
+        else if(name.endsWith('.doc'))throw Error('舊版 .doc 無法在瀏覽器內解析，請用 Word 另存為 .docx，或列印成 PDF 後再上傳。');
+        else throw Error('只支援 PDF 與 Word（.docx）考程表，這個檔案格式無法解析。');
+        if(!list.length)throw Error('檔案裡沒有辨識到「日期＋時間＋科目」的考程表格，請確認上傳的是考程時間科目表，或改用手動新增考程。');
+        importCandidates=finalizeCandidates(list);
+        const grades=[...new Set(importCandidates.map(x=>x.grade))];
+        status.textContent=`已從${name.endsWith('.docx')?' Word ':' PDF '}檔解析出 ${importCandidates.length} 筆，年級：${grades.join('、')}。低可信欄位已標示，逐筆確認後才會匯入。`;
+        renderImportPreview();
+      }catch(e){
+        console.warn(e);
+        status.textContent=e&&e.message?e.message:'考程表解析失敗。';
+        preview.innerHTML='';importCandidates=[];
+      }
+    }
+    function setupScheduleDropzone(){
+      const zone=document.getElementById('schedule-drop');if(!zone||zone.dataset.dropReady)return;
+      zone.dataset.dropReady='1';
+      const stop=e=>{e.preventDefault();e.stopPropagation()};
+      ['dragenter','dragover'].forEach(t=>zone.addEventListener(t,e=>{stop(e);if(e.dataTransfer)e.dataTransfer.dropEffect='copy';zone.classList.add('dragover')}));
+      ['dragleave','dragend'].forEach(t=>zone.addEventListener(t,e=>{stop(e);if(t==='dragleave'&&e.relatedTarget&&zone.contains(e.relatedTarget))return;zone.classList.remove('dragover')}));
+      zone.addEventListener('drop',e=>{stop(e);zone.classList.remove('dragover');const file=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if(file)handleScheduleFile(file)});
+      ['dragover','drop'].forEach(t=>window.addEventListener(t,e=>{if(!zone.contains(e.target))e.preventDefault()}));
+    }
+    /* ---- 第 3 階段：年級篩選 → 逐筆確認 → 匯入 ---- */
+    function updateImportCandidate(index,key,value){importCandidates[index][key]=value.trim();if(key==='start'||key==='end')importCandidates[index].timeProblem='';revalidateImports();renderImportPreview()}
+    function renderImportPreview(){
+      const el=document.getElementById('import-preview');
+      if(!importCandidates.length){el.innerHTML='';return}
+      const grades=[...new Set(importCandidates.map(x=>x.grade||'本班'))];
+      if(grades.length===1&&!selectedImportGrade)selectedImportGrade=grades[0];
+      const needPick=!selectedImportGrade||!grades.includes(selectedImportGrade);
+      const options=grades.map(g=>`<option value="${escapeHtml(g)}" ${g===selectedImportGrade?'selected':''}>${escapeHtml(g)}</option>`).join('');
+      const picker=`<div class="grade-filter"><strong>本班年級</strong><select id="import-grade" class="input">${needPick?'<option value="">請先選擇本班年級…</option>':''}${options}<option value="__manual">手動指定…</option></select></div>`;
+      if(needPick){
+        el.innerHTML=picker+`<div class="notice">檔案共解析出 ${importCandidates.length} 筆考程、${grades.length} 個年級。請先選擇本班年級，確認表格才會列出該年級的考程，避免不同年級的考科混在一起。</div>`;
+        bindImportGradePicker();return;
+      }
+      const shown=importCandidates.map((x,i)=>({...x,_i:i})).filter(x=>(x.grade||'本班')===selectedImportGrade);
+      el.innerHTML=picker+`<div class="notice">目前只顯示「${escapeHtml(selectedImportGrade)}」的 ${shown.length} 筆考程，請逐筆確認或修正後再匯入。</div>`+shown.map(x=>`<div class="import-row" style="grid-template-columns:auto .7fr 1fr 1fr 1fr 1fr"><input aria-label="選取第${x._i+1}筆" type="checkbox" ${x.selected?'checked':''} ${x.problems.length?'disabled':''} onchange="importCandidates[${x._i}].selected=this.checked"><input aria-label="年級" class="input" value="${escapeHtml(x.grade)}" onchange="updateImportGrade(${x._i},this.value)"><input aria-label="日期" class="input" type="date" value="${escapeHtml(x.date)}" onchange="updateImportCandidate(${x._i},'date',this.value)"><input aria-label="科目" class="input" value="${escapeHtml(x.subject)}" onchange="updateImportCandidate(${x._i},'subject',this.value)"><input aria-label="開始時間" class="input" type="time" value="${escapeHtml(x.start)}" onchange="updateImportCandidate(${x._i},'start',this.value)"><span><input aria-label="結束時間" class="input" type="time" value="${escapeHtml(x.end)}" onchange="updateImportCandidate(${x._i},'end',this.value)"><small style="display:block;color:${x.problems.length?'var(--red)':'var(--green)'}">${escapeHtml(x.problems.join('、')||'可匯入')}</small></span></div>`).join('')+`<div class="form-actions"><button class="btn primary" onclick="importParsedSchedules()">匯入選取考程</button></div>`;
+      bindImportGradePicker();
+    }
+    function bindImportGradePicker(){
+      const select=document.getElementById('import-grade');if(!select)return;
+      select.onchange=function(){
+        if(this.value==='__manual'){
+          const g=prompt('請輸入本班年級，例如：高一或初三');
+          if(g&&g.trim()){const from=selectedImportGrade||'本班';const to=g.trim();importCandidates.forEach(x=>{if((x.grade||'本班')===from)x.grade=to});selectedImportGrade=to}
+        }else selectedImportGrade=this.value;
+        renderImportPreview();
+      };
+    }
+    function updateImportGrade(index,value){importCandidates[index].grade=value.trim()||'本班';selectedImportGrade=importCandidates[index].grade;revalidateImports();renderImportPreview()}
+    function importParsedSchedules(){const selected=importCandidates.filter(x=>(x.grade||'本班')===selectedImportGrade&&x.selected&&!x.problems.length);if(!selected.length)return alert('沒有可匯入的考程。');if(!confirm(`確定匯入 ${selected.length} 筆「${selectedImportGrade}」考程？`))return;for(const x of selected){if(!config.subjects.includes(x.subject))config.subjects.push(x.subject);config.schedules.push({id:`${Date.now()}-${Math.random().toString(36).slice(2)}`,date:x.date,subject:x.subject,start:x.start,end:x.end})}config.subjects.sort((a,b)=>subjectRank(a)-subjectRank(b));config.schedules.sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));saveConfig();importCandidates=[];selectedImportGrade='';document.getElementById('import-preview').innerHTML='';document.getElementById('import-status').textContent=`已成功匯入 ${selected.length} 筆考程。`;renderAdmin()}
     function parseRoster(){const names=document.getElementById('roster-input').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),duplicates=[...new Set(names.filter((x,i)=>names.indexOf(x)!==i))],err=document.getElementById('roster-error');if(!names.length)return showRosterError('請先貼上學生姓名。');if(duplicates.length&&!confirm(`發現重複姓名：${duplicates.join('、')}。仍要套用嗎？`))return;const oldByName=new Map(config.students.map(s=>[s.name,s]));config.students=names.map((name,i)=>({id:oldByName.get(name)?.id||`s-${Date.now()}-${i}`,no:String(i+1),name}));config.absentIds=config.absentIds.filter(id=>config.students.some(s=>s.id===id));config.attendanceExpected=config.students.length;config.attendancePresent=Math.max(0,config.attendanceExpected-config.absentIds.length);err.classList.add('hidden');saveConfig();renderRoster();renderAttendanceAdmin()}
     function showRosterError(text){const err=document.getElementById('roster-error');err.textContent=text;err.classList.remove('hidden')}
     function renumberStudents(){config.students.forEach((s,i)=>s.no=String(i+1))}
@@ -191,13 +672,13 @@
     function syncDeviceTime(){config.settings.timeOffset=0;saveConfig()}
     function download(name,text,type='text/html'){const blob=new Blob([text],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
     function downloadableConfig(){const data=clone(config);data.id=`exam-${Date.now()}`;return data}
-    function downloadOfflineHtml(){const data=downloadableConfig(),root=document.documentElement.cloneNode(true),file=root.querySelector('#schedule-file'),preview=root.querySelector('#import-preview'),status=root.querySelector('#import-status');if(file)file.value='';if(preview)preview.innerHTML='';if(status){status.textContent='';status.classList.add('hidden')}root.querySelectorAll('.open').forEach(x=>x.classList.remove('open'));root.querySelector('#embedded-config').textContent=JSON.stringify(data).replaceAll('<','\\u003c');const html='<!doctype html>\n'+root.outerHTML,size=new Blob([html]).size;if(size>8*1024*1024&&!confirm(`離線檔約 ${(size/1048576).toFixed(1)} MB，確定下載？`))return;download(`段考小幫手_離線使用_${dateKey(now())}.html`,html)}
+    function downloadOfflineHtml(){const data=downloadableConfig(),root=document.documentElement.cloneNode(true),file=root.querySelector('#schedule-file'),preview=root.querySelector('#import-preview'),status=root.querySelector('#import-status');if(file)file.value='';if(preview)preview.innerHTML='';if(status){status.textContent='';status.classList.add('hidden')}const zone=root.querySelector('#schedule-drop');if(zone){zone.classList.remove('dragover');delete zone.dataset.dropReady}root.querySelectorAll('.open').forEach(x=>x.classList.remove('open'));root.querySelector('#embedded-config').textContent=JSON.stringify(data).replaceAll('<','\\u003c');const html='<!doctype html>\n'+root.outerHTML,size=new Blob([html]).size;if(size>8*1024*1024&&!confirm(`離線檔約 ${(size/1048576).toFixed(1)} MB，確定下載？`))return;download(`段考小幫手_離線使用_${dateKey(now())}.html`,html)}
     function exportJson(){download(`段考設定_${dateKey(now())}.json`,JSON.stringify(config,null,2),'application/json')}
     function importJson(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const data=JSON.parse(reader.result);if(!Array.isArray(data.schedules)||!Array.isArray(data.students))throw Error();config={...config,...data,id:embedded.id};normalizeConfig();saveConfig();renderAdmin();alert('設定已匯入')}catch(e){alert('設定檔格式不正確')}input.value=''};reader.readAsText(file)}
     function restoreEmbedded(){if(!confirm('確定清除這台電腦的所有現場修改，回復此HTML內建設定？'))return;localStorage.removeItem(storageKey());config=clone(embedded);normalizeConfig();saveConfig();renderAdmin()}
     function toggleFullscreen(){if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()}
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('settings-modal').classList.contains('open'))closeSettings()});
-    initClock();trackToolbarHeight();applyClockSettings();renderAll();scheduleClockClamp();setInterval(updateScreen,250);
+    initClock();trackToolbarHeight();setupScheduleDropzone();applyClockSettings();renderAll();scheduleClockClamp();setInterval(updateScreen,250);
     function renderAll(){renderToday();updateScreen()}
   </script>
 </body>
