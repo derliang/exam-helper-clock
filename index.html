@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>段考小幫手 v2.4.0</title>
+  <title>段考小幫手 v2.4.1</title>
   <style>
     :root{color-scheme:dark;--bg:#000;--panel:#000;--panel2:#000;--line:#526071;--text:#d8e0e8;--muted:#94a3b8;--blue:#38bdf8;--green:#6ee7a0;--yellow:#e8c85b;--orange:#e79a57;--red:#ef6680}
     *{box-sizing:border-box}html,body{margin:0;width:100%;min-height:100%;font-family:Inter,"Noto Sans TC","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--text)}button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}
@@ -53,7 +53,7 @@
 
   <div id="settings-modal" class="modal" role="dialog" aria-modal="true">
     <div class="settings">
-      <div class="settings-head"><div><h1>設定｜段考小幫手 v2.4.0</h1><div id="save-status" class="save-status">所有修改會自動儲存在本機</div></div><button class="btn" onclick="closeSettings()">返回</button></div>
+      <div class="settings-head"><div><h1>設定｜段考小幫手 v2.4.1</h1><div id="save-status" class="save-status">所有修改會自動儲存在本機</div></div><button class="btn" onclick="closeSettings()">返回</button></div>
       <nav class="tabs"><button class="btn tab-btn active" data-tab="schedule" onclick="showTab('schedule')">考程設定</button><button class="btn tab-btn" data-tab="roster" onclick="showTab('roster')">學生名單</button><button class="btn tab-btn" data-tab="attendance" onclick="showTab('attendance')">出缺席</button><button class="btn tab-btn" data-tab="display" onclick="showTab('display')">提醒與時間</button><button class="btn tab-btn" data-tab="backup" onclick="showTab('backup')">離線使用</button></nav>
       <section id="tab-schedule" class="tab-page active">
         <div class="grid2">
@@ -75,7 +75,7 @@
   <div id="absent-modal" class="mini-modal"><div class="mini-panel"><h2 id="absent-modal-title">新增缺席者</h2><input id="manual-absent-id" type="hidden"><div class="grid2"><label class="field"><span>座號</span><input id="manual-absent-no" class="input" inputmode="numeric"></label><label class="field"><span>姓名</span><input id="manual-absent-name" class="input"></label></div><div class="form-actions"><button class="btn" onclick="closeAbsentDialog()">取消</button><button class="btn primary" onclick="saveManualAbsent()">儲存</button></div></div></div>
 
   <script>
-    const APP_VERSION='2.4.0';
+    const APP_VERSION='2.4.1';
     const SUBJECT_ORDER=['國文','中文作文','英文','英聽','數學','歷史','地理','公民','物理','化學','生物','地科','理化'];
     const SUBJECT_ALIASES={'國語文':'國文','國語':'國文','語文':'國文','英語文':'英文','英語':'英文','英文科':'英文','數學科':'數學','中國語文':'國文','公民與社會':'公民','地球科學':'地科'};
     const DURATIONS=[25,40,50,60,70,80,95];
