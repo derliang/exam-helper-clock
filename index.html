@@ -35,7 +35,7 @@
   
 
     /* 慶祝考試結束 */
-    #celebrate{position:fixed;inset:0;z-index:300;background:#000;display:none;opacity:0;transition:opacity .4s ease;cursor:pointer}#celebrate.show{display:block}#celebrate.on{opacity:1}#celebrate.off{opacity:0;transition-duration:.8s}#celebrate canvas{position:absolute;inset:0;width:100%;height:100%}.celebrate-text{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;padding:0 5vw;pointer-events:none}.celebrate-title{font-size:clamp(3rem,10vw,9rem);font-weight:1000;letter-spacing:.1em;color:#fff;text-shadow:0 0 .35em #ffd166,0 0 .9em #ef6680}.celebrate-sub{transition:opacity .3s ease;margin-top:2vh;font-size:clamp(1.4rem,3.6vw,3.6rem);font-weight:900;color:#ffe9a8;text-shadow:0 0 .5em #000}
+    #celebrate{position:fixed;inset:0;z-index:300;background:#000;display:none;opacity:0;transition:opacity .4s ease;cursor:pointer}#celebrate.show{display:block}#celebrate.on{opacity:1}#celebrate.off{opacity:0;transition-duration:.8s}#celebrate canvas{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}.celebrate-text{z-index:1;position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;padding:0 5vw;pointer-events:none}.celebrate-title{font-size:clamp(3rem,10vw,9rem);font-weight:1000;letter-spacing:.1em;color:#fff;text-shadow:0 0 .35em #ffd166,0 0 .9em #ef6680}.celebrate-sub{transition:opacity .3s ease;margin-top:2vh;font-size:clamp(1.4rem,3.6vw,3.6rem);font-weight:900;color:#ffe9a8;text-shadow:0 0 .5em #000}
 .celebrate-box{display:flex;flex-direction:column;gap:10px;margin:14px 0;padding:12px;border:1px solid #405a78;border-radius:10px}.celebrate-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:700px){.celebrate-row{grid-template-columns:1fr}}.celebrate-lines{display:grid;grid-template-columns:1fr;gap:6px;max-height:210px;overflow:auto;padding:2px}.celebrate-lines .voice-option{margin:0}
     /* ===== 手機／平板版面（2026-10-06 版面檢查後調整） ===== */
     @media(max-width:900px){
@@ -115,7 +115,7 @@
   <div id="absent-modal" class="mini-modal"><div class="mini-panel absent-dlg"><h2 id="absent-modal-title">新增缺席者</h2><input id="manual-absent-id" type="hidden"><div class="absent-body"><div id="absent-pick" class="absent-pick hidden"><div class="pick-title">從學生名單挑選（點一下加入缺席，再點一下取消）</div><div id="absent-pick-grid" class="pick-grid"></div><div class="pick-or">— 或手動輸入 —</div></div><div class="absent-manual"><div class="manual-title">或手動輸入</div><div class="grid2"><label class="field"><span>座號</span><input id="manual-absent-no" class="input" inputmode="numeric"></label><label class="field"><span>姓名</span><input id="manual-absent-name" class="input"></label></div><div class="form-actions"><button class="btn" onclick="closeAbsentDialog()">取消</button><button class="btn primary" onclick="saveManualAbsent()">儲存</button></div></div></div></div></div>
 
   <script>
-    const APP_VERSION='2.28.0',APP_DATE='2026-10-08';
+    const APP_VERSION='2.28.1',APP_DATE='2026-10-08';
     /* 版號只寫在 APP_VERSION，標題與設定頁一律由它產生，避免三處各自漂移 */
     document.title=`段考小幫手 v${APP_VERSION}`;
     /* 可重複排入考程的科目（其他科目同一科只能排一次）；同時是內建科目，不可刪除或改名 */
@@ -1045,7 +1045,7 @@
       sub.style.opacity=1;sub.textContent=o.lines[0]||'';let curLine=0;
       box.classList.remove('off');box.classList.add('show');
       const W=cv.width=box.clientWidth,H=cv.height=box.clientHeight,scale=Math.max(.6,Math.min(W,H)/800),lite=W*H>2.5e6?.7:1,D=o.sec,st=o.style,types=FW_TYPES[st],fw=!!types,fountain=st==='fountain',cf=st==='confetti'||st==='mix',bl=st==='balloons',sr=st==='stars',R=Math.random;
-      requestAnimationFrame(()=>box.classList.add('on'));ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+      requestAnimationFrame(()=>box.classList.add('on'));ctx.clearRect(0,0,W,H);
       const rockets=[],sparks=[],emitters=[],conf=[],bals=[],stars=[];let t0=null,nextLaunch=.5,ending=false,last=0,acc=0,typeIdx=0;
       const hueOf=()=>Math.floor(R()*360);
       /* 火花：dr 每格阻力、g 重力、dc 每秒衰減（壽命＝1/dc 秒） */
@@ -1054,7 +1054,7 @@
       const spd=(rt,dr)=>rt*scale*60*(1-dr);
       const pickType=()=>types.length===1?types[0]:types[typeIdx++%types.length];
       const hueFor=type=>type==='heart'?335+R()*25:type==='star'?46+R()*14:type==='willow'?40+R()*10:hueOf();
-      const launch=()=>{const type=pickType();rockets.push({x:W*(.15+R()*.7),y:H,ty:H*(.15+R()*.3),vy:-H*1.1,hue:hueFor(type),type})};
+      let side=R()<.5?0:1;const launch=()=>{const type=pickType();side=1-side;const x=side?W*(.58+R()*.36):W*(.06+R()*.36),mid=R()<.18;rockets.push({x:mid?W*(.38+R()*.24):x,y:H,ty:H*(.10+R()*.58),vy:-H*1.1,hue:hueFor(type),type})};
       const boom=r=>{
         const x=r.x,y=r.y,h=r.hue;
         switch(r.type){
@@ -1084,8 +1084,8 @@
         if(o.lines.length>1){const li=Math.min(o.lines.length-1,Math.floor(t/CELEBRATE_LINE_SEC));if(li!==curLine){curLine=li;sub.style.opacity=0;setTimeout(()=>{if(celebrating){sub.textContent=o.lines[li];sub.style.opacity=1}},300)}}
         /* 煙火一路放到最後（只留最後 0.5 秒讓火花自然淡出）；盛大煙火秀在最後 3 秒加快節奏 */
         const spawning=!ending&&t<D-.5,finale=st==='grand'&&D>=9&&t>D-3;
-        ctx.fillStyle=(fw||fountain)?(cf?'rgba(0,0,0,.35)':(st==='willow'?'rgba(0,0,0,.12)':'rgba(0,0,0,.22)')):'#000';ctx.fillRect(0,0,W,H);
-        if(fw&&spawning&&t>=nextLaunch){launch();if(finale){launch();launch()}else if(R()<.5&&(st==='fireworks'||st==='mix'||st==='rainbow'))launch();nextLaunch+=finale?.18:FW_GAP[st]}
+        if(fw||fountain){ctx.globalCompositeOperation='destination-out';ctx.fillStyle=cf?'rgba(0,0,0,.35)':(st==='willow'?'rgba(0,0,0,.12)':'rgba(0,0,0,.22)');ctx.fillRect(0,0,W,H);ctx.globalCompositeOperation='source-over'}else ctx.clearRect(0,0,W,H);
+        if(fw&&spawning&&t>=nextLaunch){launch();if(finale){launch();launch()}else if(R()<(st==='fireworks'||st==='mix'||st==='rainbow'?.5:.4))launch();nextLaunch+=finale?.18:FW_GAP[st]}
         if(fountain&&spawning&&t>=nextLaunch){addEmitter(t);if(R()<.6)addEmitter(t);nextLaunch+=FW_GAP.fountain}
         if(cf&&spawning){acc+=dt*70*lite;while(acc>=1){addConf(-20);acc--}}
         if(bl&&spawning&&R()<dt*6)addBal();
