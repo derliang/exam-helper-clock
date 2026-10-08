@@ -3,7 +3,7 @@
  */
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('index')
-    .setTitle('段考小幫手 v2.21.0') // 版號需與 index.html 的 APP_VERSION 同步
+    .setTitle('段考小幫手 v2.22.0') // 版號需與 index.html 的 APP_VERSION 同步
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL) // 允許在 Iframe 中運行
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
