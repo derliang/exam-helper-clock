@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>段考小幫手 v2.22.0</title>
+  <title>段考小幫手 v2.22.1</title>
   <script>
     /* 相容性檢查：主程式用到較新的語法／API，舊瀏覽器整份 script 會語法錯誤而變空白頁，故在此先偵測並提示 */
     (function(){var ok=true;try{new Function('var a={};return a?.b??1;');new Function('async function f(){}');ok=!!(window.Promise&&window.localStorage&&Array.prototype.flat&&Object.fromEntries&&window.URL&&window.Blob)}catch(e){ok=false}
@@ -89,7 +89,7 @@
 
   <div id="settings-modal" class="modal" role="dialog" aria-modal="true">
     <div class="settings">
-      <div class="settings-head"><div><h1 id="settings-title">設定｜段考小幫手 v2.22.0（2026-10-07）</h1><div id="save-status" class="save-status">所有修改會自動儲存在本機</div></div><button class="btn" onclick="closeSettings()">返回</button></div>
+      <div class="settings-head"><div><h1 id="settings-title">設定｜段考小幫手 v2.22.1（2026-10-07）</h1><div id="save-status" class="save-status">所有修改會自動儲存在本機</div></div><button class="btn" onclick="closeSettings()">返回</button></div>
       <nav class="tabs"><button class="btn tab-btn active" data-tab="schedule" onclick="showTab('schedule')">考程設定</button><button class="btn tab-btn" data-tab="roster" onclick="showTab('roster')">學生名單</button><button class="btn tab-btn" data-tab="attendance" onclick="showTab('attendance')">出缺席</button><button class="btn tab-btn" data-tab="display" onclick="showTab('display')">提醒與時間</button><button class="btn tab-btn" data-tab="backup" onclick="showTab('backup')">離線使用</button></nav>
       <section id="tab-schedule" class="tab-page active">
         <div class="grid2">
@@ -115,7 +115,7 @@
   <div id="absent-modal" class="mini-modal"><div class="mini-panel absent-dlg"><h2 id="absent-modal-title">新增缺席者</h2><input id="manual-absent-id" type="hidden"><div class="absent-body"><div id="absent-pick" class="absent-pick hidden"><div class="pick-title">從學生名單挑選（點一下加入缺席，再點一下取消）</div><div id="absent-pick-grid" class="pick-grid"></div><div class="pick-or">— 或手動輸入 —</div></div><div class="absent-manual"><div class="manual-title">或手動輸入</div><div class="grid2"><label class="field"><span>座號</span><input id="manual-absent-no" class="input" inputmode="numeric"></label><label class="field"><span>姓名</span><input id="manual-absent-name" class="input"></label></div><div class="form-actions"><button class="btn" onclick="closeAbsentDialog()">取消</button><button class="btn primary" onclick="saveManualAbsent()">儲存</button></div></div></div></div></div>
 
   <script>
-    const APP_VERSION='2.22.0',APP_DATE='2026-10-07';
+    const APP_VERSION='2.22.1',APP_DATE='2026-10-07';
     /* 版號只寫在 APP_VERSION，標題與設定頁一律由它產生，避免三處各自漂移 */
     document.title=`段考小幫手 v${APP_VERSION}`;
     /* 可重複排入考程的科目（其他科目同一科只能排一次）；同時是內建科目，不可刪除或改名 */
@@ -173,7 +173,7 @@
     function setClockMarker(el,percent){const a=percent*3.6,t=`rotate(${a} 100 100)`;if(el.getAttribute('transform')!==t){el.setAttribute('transform',t);const mv=el.firstElementChild;if(mv)mv.setAttribute('transform',`translate(${el.dataset.r} 100) rotate(90) ${el.dataset.k}`)}setS(el,'display','')}
     function hideExamProgress(){['progress-dot','progress-dot2','progress-dot3','finish-marker','ring-track2','ring-track3'].forEach(id=>setS(ui(id),'display','none'));['progress-ring2','progress-ring3'].forEach(id=>{const r=ui(id);setS(r,'stroke','transparent');setS(r,'strokeDasharray','0 100')})}
     /* 倒數環：一圈＝60 分鐘（對齊時鐘分針位置）。考試 ≤60 分鐘只有外圈；超過 60 分鐘時外圈＝前 60 分鐘、內圈＝超出的部分，先走外圈再走內圈 */
-    function renderExamProgress(item,sec,ring){const start=minutes(item.start)*60,end=minutes(item.end)*60,total=end-start,lap=total>10800?total/3:3600,laps=Math.max(1,Math.min(3,Math.ceil(total/lap-1e-9))),cur=Math.max(start,Math.min(sec,end)),pos=lap===3600?(t=>((t%3600)/36)%100):(t=>(((t-start)%lap)/lap*100)),rings=[ring,ui('progress-ring2'),ui('progress-ring3')],tracks=[null,ui('ring-track2'),ui('ring-track3')],dots=[ui('progress-dot'),ui('progress-dot2'),ui('progress-dot3')];const idx=Math.min(laps-1,Math.floor((cur-start)/lap));for(let k=0;k<3;k++){const el=rings[k];if(k>=laps){setS(el,'stroke','transparent');setS(el,'strokeDasharray','0 100');if(tracks[k])setS(tracks[k],'display','none');setS(dots[k],'display','none');continue}const s0=start+k*lap,e0=Math.min(end,s0+lap),a=Math.max(cur,s0),span=Math.max(0,(e0-a)/lap*100);setS(el,'stroke',span>.05?'var(--green)':'transparent');setS(el,'strokeDasharray',`${span} ${100-span}`);setS(el,'strokeDashoffset',String(-pos(s0)));if(tracks[k])setS(tracks[k],'display','');if(k===idx)setClockMarker(dots[k],pos(cur));else setS(dots[k],'display','none')}setClockMarker(ui('finish-marker'),pos(end))}
+    function renderExamProgress(item,sec,ring){const start=minutes(item.start)*60,end=minutes(item.end)*60,total=end-start,lap=total>10800?total/3:3600,laps=Math.max(1,Math.min(3,Math.ceil(total/lap-1e-9))),cur=Math.max(start,Math.min(sec,end)),pos=lap===3600?(t=>((t%3600)/36)%100):(t=>(((t-start)%lap)/lap*100)),rings=[ring,ui('progress-ring2'),ui('progress-ring3')],tracks=[null,ui('ring-track2'),ui('ring-track3')],dots=[ui('progress-dot'),ui('progress-dot2'),ui('progress-dot3')];const idx=Math.min(laps-1,Math.floor((cur-start)/lap));for(let k=0;k<3;k++){const el=rings[k];if(k>=laps){setS(el,'stroke','transparent');setS(el,'strokeDasharray','0 100');if(tracks[k])setS(tracks[k],'display','none');setS(dots[k],'display','none');continue}const s0=start+k*lap,e0=Math.min(end,s0+lap),a=Math.max(cur,s0),span=Math.max(0,(e0-a)/lap*100);setS(el,'stroke',span>.05?'var(--green)':'transparent');setS(el,'strokeDasharray',`${span} ${100-span}`);setS(el,'strokeDashoffset',String(-pos(a)));if(tracks[k])setS(tracks[k],'display','');if(k===idx)setClockMarker(dots[k],pos(cur));else setS(dots[k],'display','none')}setClockMarker(ui('finish-marker'),pos(end))}
     function updateScreen(){
       const d=now(),h=d.getHours(),m=d.getMinutes(),s=d.getSeconds(),timeline=getTimeline(d),st=config.settings;
       const clockText=`${pad(h)}:${pad(m)}${st.showSeconds?`:${pad(s)}`:''}`;
