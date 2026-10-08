@@ -115,7 +115,7 @@
   <div id="absent-modal" class="mini-modal"><div class="mini-panel absent-dlg"><h2 id="absent-modal-title">新增缺席者</h2><input id="manual-absent-id" type="hidden"><div class="absent-body"><div id="absent-pick" class="absent-pick hidden"><div class="pick-title">從學生名單挑選（點一下加入缺席，再點一下取消）</div><div id="absent-pick-grid" class="pick-grid"></div><div class="pick-or">— 或手動輸入 —</div></div><div class="absent-manual"><div class="manual-title">或手動輸入</div><div class="grid2"><label class="field"><span>座號</span><input id="manual-absent-no" class="input" inputmode="numeric"></label><label class="field"><span>姓名</span><input id="manual-absent-name" class="input"></label></div><div class="form-actions"><button class="btn" onclick="closeAbsentDialog()">取消</button><button class="btn primary" onclick="saveManualAbsent()">儲存</button></div></div></div></div></div>
 
   <script>
-    const APP_VERSION='2.22.1',APP_DATE='2026-10-07';
+    const APP_VERSION='2.22.2',APP_DATE='2026-10-08';
     /* 版號只寫在 APP_VERSION，標題與設定頁一律由它產生，避免三處各自漂移 */
     document.title=`段考小幫手 v${APP_VERSION}`;
     /* 可重複排入考程的科目（其他科目同一科只能排一次）；同時是內建科目，不可刪除或改名 */
@@ -180,7 +180,7 @@
       setT(ui('large-digital-text'),clockText);setT(ui('flip-time'),clockText);
       setS(ui('hour-hand'),'transform',`translateX(-50%) rotate(${(h%12)*30+m*.5}deg)`);setS(ui('minute-hand'),'transform',`translateX(-50%) rotate(${m*6+s*.1}deg)`);setS(ui('second-hand'),'transform',`translateX(-50%) rotate(${s*6}deg)`);
       const ring=ui('progress-ring'),next=timeline.next;
-      let phase='idle',progress=0,ringColor='var(--blue)',label='',subject='',range='',rangeHtml=false,message='';
+      let phase='idle',progress=0,ringFrom=0,ringColor='var(--blue)',label='',subject='',range='',rangeHtml=false,message='';
       /* 自習不是考科：考科提醒只看「下一個非自習的考科」；自習進行中或下一節是自習，也照常在考科前提醒 */
       const nxExam=timeline.items.find(x=>!isRepeatable(x.subject)&&minutes(x.start)*60>timeline.sec),remindNow=!!nxExam&&!(timeline.active&&!isRepeatable(timeline.active.subject))&&(minutes(nxExam.start)*60-timeline.sec)/60<=Number(st.reminder10),tg=remindNow?nxExam:next;
       if(timeline.active&&!remindNow){
@@ -188,7 +188,8 @@
         phase='exam';label=studying?'自習中':'考試進行中';subject=a.subject;range=`${a.start}－${a.end}（共 ${minutes(a.end)-minutes(a.start)} 分）`;message=studying?(st.studyMessage||'請安靜自習'):'';
       }else if(tg){
         const remain=minutes(tg.start)*60-timeline.sec,mins=remain/60,previous=[...timeline.items].reverse().find(x=>minutes(x.end)*60<=timeline.sec),inBuffer=previous&&!isRepeatable(previous.subject)&&timeline.sec<minutes(previous.end)*60+st.postExamMinutes*60;
-        progress=Math.min(100,remain/Math.max(Number(st.reminder10)*60,1)*100);
+        /* 提醒倒數環對齊分針：弧線從目前時間的分針位置，順時針走到開始時間的位置（一圈＝60 分鐘，與考試中的倒數環一致） */
+        progress=Math.min(100,Math.max(0,remain/36));ringFrom=(timeline.sec%3600)/36;
         const countdown=()=>{rangeHtml=true;return`${tg.start} 開始（倒數 <span class="countdown-inline">${timeText(remain)}</span>）`};
         if(inBuffer){phase='post';label='考試結束';subject='考試結束';message='請依監考老師指示完成收卷';ringColor='#64748b'}
         else if(mins<=Number(st.reminder1)){phase='final';label='考試即將開始';subject=tg.subject;range=countdown();message=st.message1;ringColor='var(--red)'}
@@ -202,9 +203,10 @@
       }else{phase='idle';label='今天沒有考程';subject='安靜自習';message=nextExamDay(timeline.key)}
       setT(ui('state-label'),label);setT(ui('subject-now'),subject);if(rangeHtml)setH(ui('time-range'),range);else setT(ui('time-range'),range);setT(ui('countdown'),'');setT(ui('message'),message);
       setC(ui('info-card'),`card info-card phase-${phase}`);
-      const bar=ui('digital-bar');setC(bar,phase==='exam'?'digital-bar on':'digital-bar');
-      if(phase==='exam'){renderExamProgress(timeline.active,timeline.sec,ring);const a=timeline.active,t0=minutes(a.start)*60,t1=minutes(a.end)*60;const r=Math.max(0,Math.min(1,(t1-timeline.sec)/Math.max(1,t1-t0))),car=ui('bar-car'),cl=`calc(.15em + ${(1-r).toFixed(4)} * (100% - .3em))`;setS(ui('digital-bar-fill'),'transform',`scaleX(${r.toFixed(4)})`);if(car._l!==cl){car._l=cl;car.style.left=cl}}
-      else{hideExamProgress();const counting=['prepare','soon','final'].includes(phase);setS(ring,'stroke',counting?ringColor:'transparent');setS(ring,'strokeDasharray',counting?`${progress} ${100-progress}`:'0 100');setS(ring,'strokeDashoffset','0')}
+      /* 進行中的行程（含自習）一律顯示進度：即使考科前提醒已蓋過資訊卡，血量條與倒數環仍照自習／考試的實際剩餘時間走到結束 */
+      const bar=ui('digital-bar');setC(bar,timeline.active?'digital-bar on':'digital-bar');
+      if(timeline.active){renderExamProgress(timeline.active,timeline.sec,ring);const a=timeline.active,t0=minutes(a.start)*60,t1=minutes(a.end)*60;const r=Math.max(0,Math.min(1,(t1-timeline.sec)/Math.max(1,t1-t0))),car=ui('bar-car'),cl=`calc(.15em + ${(1-r).toFixed(4)} * (100% - .3em))`;setS(ui('digital-bar-fill'),'transform',`scaleX(${r.toFixed(4)})`);if(car._l!==cl){car._l=cl;car.style.left=cl}}
+      else{hideExamProgress();const counting=['prepare','soon','final'].includes(phase);setS(ring,'stroke',counting?ringColor:'transparent');setS(ring,'strokeDasharray',counting?`${progress} ${100-progress}`:'0 100');setS(ring,'strokeDashoffset',counting?String(-ringFrom):'0')}
       const stateKey=`${phase}:${remindNow?nxExam.id:(timeline.active?.id||next?.id||'')}:${Math.floor(timeline.sec/60)}`;
       if(lastState!==stateKey){announcePhase(phase,tg);lastState=stateKey;if(!selectedScheduleDay||selectedScheduleDay<timeline.key)selectedScheduleDay=timeline.key;renderToday()}
     }
