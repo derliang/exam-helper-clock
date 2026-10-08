@@ -115,7 +115,7 @@
   <div id="absent-modal" class="mini-modal"><div class="mini-panel absent-dlg"><h2 id="absent-modal-title">新增缺席者</h2><input id="manual-absent-id" type="hidden"><div class="absent-body"><div id="absent-pick" class="absent-pick hidden"><div class="pick-title">從學生名單挑選（點一下加入缺席，再點一下取消）</div><div id="absent-pick-grid" class="pick-grid"></div><div class="pick-or">— 或手動輸入 —</div></div><div class="absent-manual"><div class="manual-title">或手動輸入</div><div class="grid2"><label class="field"><span>座號</span><input id="manual-absent-no" class="input" inputmode="numeric"></label><label class="field"><span>姓名</span><input id="manual-absent-name" class="input"></label></div><div class="form-actions"><button class="btn" onclick="closeAbsentDialog()">取消</button><button class="btn primary" onclick="saveManualAbsent()">儲存</button></div></div></div></div></div>
 
   <script>
-    const APP_VERSION='2.24.0',APP_DATE='2026-10-08';
+    const APP_VERSION='2.24.1',APP_DATE='2026-10-08';
     /* 版號只寫在 APP_VERSION，標題與設定頁一律由它產生，避免三處各自漂移 */
     document.title=`段考小幫手 v${APP_VERSION}`;
     /* 可重複排入考程的科目（其他科目同一科只能排一次）；同時是內建科目，不可刪除或改名 */
@@ -141,7 +141,7 @@
     const embedded=JSON.parse(document.getElementById('embedded-config').textContent);
     const storageKey=()=>`exam-helper:${embedded.id}`;
     const clone=value=>JSON.parse(JSON.stringify(value));
-    let config=clone(embedded),selectedSubject='',lastState='',importCandidates=[],selectedImportGrade='',selectedScheduleDay='',adminDay='';
+    let config=clone(embedded),selectedSubject='',lastState='',lastAnnounce='',importCandidates=[],selectedImportGrade='',selectedScheduleDay='',adminDay='';
     let absentAll=[],absentFitPending=false;
     try{const saved=localStorage.getItem(storageKey());if(saved)config={...config,...JSON.parse(saved)}}catch(e){console.warn(e)}
     normalizeConfig();
@@ -208,7 +208,9 @@
       if(timeline.active){renderExamProgress(timeline.active,timeline.sec,ring);const a=timeline.active,t0=minutes(a.start)*60,t1=minutes(a.end)*60;const r=Math.max(0,Math.min(1,(t1-timeline.sec)/Math.max(1,t1-t0))),car=ui('bar-car'),ct=`translateX(${((1-r)*100).toFixed(3)}%)`;setS(ui('digital-bar-fill'),'transform',`scaleX(${r.toFixed(4)})`);if(car._l!==ct){car._l=ct;car.style.transform=ct}}
       else{hideExamProgress();const counting=['prepare','soon','final'].includes(phase);setS(ring,'stroke',counting?ringColor:'transparent');setS(ring,'strokeDasharray',counting?`${progress} ${100-progress}`:'0 100');setS(ring,'strokeDashoffset',counting?String(-ringFrom):'0')}
       const stateKey=`${phase}:${remindNow?nxExam.id:(timeline.active?.id||next?.id||'')}:${Math.floor(timeline.sec/60)}`;
-      if(lastState!==stateKey){announcePhase(phase,tg);lastState=stateKey;if(!selectedScheduleDay||selectedScheduleDay<timeline.key)selectedScheduleDay=timeline.key;renderToday()}
+      /* 語音：同一場考試的同一個提醒階段只播一次（10／5／1 分鐘各一次）；不可跟著每分鐘更新的 stateKey 走 */
+      const annKey=`${phase}:${tg?tg.id:''}`;if(annKey!==lastAnnounce){lastAnnounce=annKey;announcePhase(phase,tg)}
+      if(lastState!==stateKey){lastState=stateKey;if(!selectedScheduleDay||selectedScheduleDay<timeline.key)selectedScheduleDay=timeline.key;renderToday()}
     }
     /* 每秒更新一次，且對準校正後時間的整秒邊界：倒數數字在整秒翻動，血量條與倒數環以「秒」為單位按比例走，不需要更頻繁地重畫 */
     function tickScreen(){try{updateScreen()}finally{setTimeout(tickScreen,1000-((Date.now()+(config.settings.timeOffset||0))%1000)+15)}}
