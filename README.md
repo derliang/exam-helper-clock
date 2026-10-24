@@ -37,6 +37,7 @@
 index.html   主程式，單一檔案（HTML + CSS + JS），無需建置流程
 Code.gs      Google Apps Script 進入點，供部署為網頁應用程式使用
 TODO.md      開發需求與待辦清單，記錄後續修改方向與已完成批次
+LICENSE.md   使用授權與著作權聲明（非營利使用；另見既有 COPYRIGHT.md）
 README.md    本檔案
 ```
 
@@ -47,3 +48,11 @@ README.md    本檔案
 - 發佈：說「發佈最新程式」＝把工作分支直接合併進最新的 `main` 並 push（不開 PR），GitHub Pages 自動部署；詳見 `TODO.md` 的「發佈流程」。
 - 設計原則：這是電子考程表，**顯示效果以桌機解析度為主**；iPad 與手機版面只是讓使用者設定與排考程，要清楚漂亮，但不是為了顯示考程。詳見 `TODO.md` 的「設計原則」。
 - 目前版本：見 `index.html` 內 `<title>` 與設定頁標題（`APP_VERSION`）。
+
+## 著作權與使用授權
+
+© 2026 derliang. All rights reserved.
+
+本程式免費提供聖功女中師生於非營利教育用途使用；**所有使用者均限非營利使用**。其他學校或機構請先寄信至 [derliang@gmail.com](mailto:derliang@gmail.com) 申請，並取得作者 Email 回覆同意。程式碼重製、修改、散布、再發布及商業使用均須另行授權。
+
+完整條款請參閱 [LICENSE.md](./LICENSE.md)。
