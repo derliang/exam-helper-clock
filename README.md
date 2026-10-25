@@ -39,6 +39,8 @@ Code.gs      Google Apps Script 進入點，供部署為網頁應用程式使用
 TODO.md      開發需求與待辦清單，記錄後續修改方向與已完成批次
 LICENSE.md   使用授權與著作權聲明（非營利使用；另見既有 COPYRIGHT.md）
 README.md    本檔案
+CLAUDE.md    專案守則（給 Claude 與其他 AI 工具：不可違反的限制與流程）
+docs/design/DESIGN.md  設計規範（深色唯一、tokens、版面斷點、元件規則、決策紀錄）
 ```
 
 ## 開發說明
@@ -47,6 +49,7 @@ README.md    本檔案
 - 修改需求先集中記錄在 `TODO.md`，待明確要求「一次修改並 Push」後再統一實作、測試、commit 與發布；細節見 `TODO.md` 的「修改作業方式」。
 - 發佈：說「發佈最新程式」＝把工作分支直接合併進最新的 `main` 並 push（不開 PR），GitHub Pages 自動部署；詳見 `TODO.md` 的「發佈流程」。
 - 設計原則：這是電子考程表，**顯示效果以桌機解析度為主**；iPad 與手機版面只是讓使用者設定與排考程，要清楚漂亮，但不是為了顯示考程。詳見 `TODO.md` 的「設計原則」。
+- 介面設計：**只有深色模式，主畫面背景一律純黑 `#000`**（大屏省電、不發熱）。改頁面、版面、元件前先讀 `docs/design/DESIGN.md`。
 - 目前版本：見 `index.html` 內 `<title>` 與設定頁標題（`APP_VERSION`）。
 
 ## 著作權與使用授權
