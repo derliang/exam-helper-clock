@@ -69,6 +69,220 @@ Authorization inquiries: derliang@gmail.com
     @media (max-width:900px) and (orientation:landscape),(min-width:700px) and (max-width:900px) and (orientation:portrait){.hero{grid-template-columns:1fr 1fr}.clock-wrap,.clock-wrap.size-xl{width:min(40vw,44vh)}.clock-wrap.size-lg{width:min(36vw,40vh)}.clock-wrap.size-md{width:min(30vw,34vh)}.clock-wrap.size-sm{width:min(24vw,26vh)}.clock-card{min-height:220px}}
     @media(min-width:901px) and (max-width:1280px){.absent-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
     .copyright-note{margin:18px 0 0;padding:6px 10px 8px;text-align:center;color:var(--muted);font-size:11px;line-height:1.5}.copyright-note a{color:inherit;text-decoration:underline;padding:4px 0}.copyright-note a:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+
+    /* ============================================================
+       設計系統層 v2.29（深色唯一；主畫面一律純黑 #000，省電）
+       規範與 token 說明：docs/design/DESIGN.md
+       只改外觀：不含任何會每秒重繪的特效（無陰影模糊、無漸層、無新動畫）
+       ============================================================ */
+    :root{
+      --bg:#000;
+      --s1:#05080d;--s2:#0a1119;--s3:#101a26;--s4:#182534;
+      --line:#526071;--line-soft:#263548;--line-mid:#3a4d66;--line-hi:#5b7391;
+      --text:#d8e0e8;--text-hi:#eef3f8;--muted:#94a3b8;
+      --blue:#38bdf8;--green:#6ee7a0;--yellow:#e8c85b;--orange:#e79a57;--red:#ef6680;
+      --primary:#0369a1;--primary-hi:#7dd3fc;--danger-bg:#2a0a14;--danger-line:#9f1239;--danger-ink:#ffb4c0;
+      --r-sm:8px;--r-md:12px;--r-lg:18px;
+      --hit:40px;--pad:24px;--head-h:68px;
+    }
+    @media(pointer:coarse),(max-width:900px){:root{--hit:44px}}
+    @media(max-width:700px){:root{--pad:16px;--head-h:64px}}
+    :focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+    .input:focus-visible{outline:none}
+
+    /* ---------- 主畫面：只調整色彩層次與按鈕輕重，不動尺寸與版面比例 ---------- */
+    .section-title{color:var(--muted);font-weight:800;letter-spacing:.04em}
+    #today-date{color:var(--text-hi)}
+    .stat span{letter-spacing:.06em}
+    .schedule-item{border-color:#3b4a5e}
+    .schedule-item.active{border-color:#63dba0}
+    .schedule-item.active .tag{color:var(--green)}
+    .schedule-item.next .tag{color:var(--yellow)}
+    .schedule-actions .btn{background:#000;border-color:#3b4a5e;color:var(--muted);border-radius:7px;font-weight:700}
+    .schedule-actions .btn.danger{background:#000;color:var(--red);border-color:#5b2434}
+    .schedule-actions .btn:hover{border-color:var(--line-hi);color:var(--text-hi)}
+    .bottom-actions{box-shadow:0 0 0 1px var(--line-soft);opacity:.85}
+    .bottom-actions .btn{background:#000;border-color:var(--line-mid);color:var(--text)}
+    .bottom-actions .btn.primary{background:var(--primary);border-color:var(--primary-hi);color:#fff}
+    .clock-nudge{opacity:.55;transition:opacity .2s}
+    .clock-nudge:hover,.clock-nudge:focus-within{opacity:1}
+    .clock-nudge .btn,.clock-time-quick{border-color:var(--line-mid);color:var(--muted)}
+    .clock-time-quick{opacity:.8}
+    .day-tab{border-color:var(--line-soft);color:var(--muted)}
+    .absent-person .icon-btn{border-color:#7a2a3d;background:#000}
+
+    /* ---------- 共用元件（設定視窗與對話框） ---------- */
+    .modal{background:#000;padding:0;overscroll-behavior:contain}
+    html:has(.modal.open),html:has(.mini-modal.open){overflow:hidden}
+    .mini-modal{background:#000d}
+    .settings,.mini-panel{color:var(--text)}
+    .settings .btn,.mini-panel .btn{min-height:var(--hit);padding:8px 14px;border-radius:var(--r-sm);border:1px solid var(--line-mid);background:var(--s3);color:var(--text-hi);font-weight:700;line-height:1.2}
+    .settings .btn:hover,.mini-panel .btn:hover{background:var(--s4);border-color:var(--line-hi)}
+    .settings .btn.primary,.mini-panel .btn.primary{background:var(--primary);border-color:var(--primary-hi);color:#fff}
+    .settings .btn.primary:hover,.mini-panel .btn.primary:hover{background:#0b78b0}
+    .settings .btn.danger,.mini-panel .btn.danger{background:var(--danger-bg);border-color:var(--danger-line);color:var(--danger-ink)}
+    .settings .btn.success,.mini-panel .btn.success{background:#0f3d22;border-color:#2f9a5c;color:#c9f7da}
+    .settings .btn:disabled,.mini-panel .btn:disabled{opacity:.45;cursor:not-allowed}
+    .settings .icon-btn,.mini-panel .icon-btn{min-height:0;width:36px;height:36px;padding:0}
+    .settings .input,.mini-panel .input{min-height:var(--hit);padding:9px 12px;background:var(--s1);border:1px solid var(--line-mid);border-radius:var(--r-sm);color:var(--text-hi)}
+    .settings textarea.input,.mini-panel textarea.input{min-height:0;line-height:1.6}
+    .settings .input:focus,.mini-panel .input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px #38bdf833}
+    .settings .input::placeholder,.mini-panel .input::placeholder{color:#6f7f93}
+    .field>span{font-size:.875rem;font-weight:700;color:var(--muted);line-height:1.5}
+    .hint{font-size:.85rem;font-weight:600;line-height:1.6;color:var(--muted)}
+    .notice{padding:10px 12px;border:1px solid var(--line-mid);border-radius:var(--r-sm);background:var(--s3);color:var(--text);font-size:.9rem;font-weight:500;line-height:1.7}
+    .error{border-radius:var(--r-sm);font-weight:700}
+    .chip{min-height:var(--hit);padding:8px 14px;border-radius:var(--r-sm);border:1px solid var(--line-mid);background:var(--s3);color:var(--text-hi);font-weight:700}
+    .chip:hover:not(:disabled):not(.used){background:var(--s4);border-color:var(--line-hi)}
+    .chip.selected{background:var(--primary);border-color:var(--primary-hi);color:#fff}
+    .chip.active{background:#7a0f2c;border-color:var(--red);color:#fff}
+    .pick-grid .chip{min-height:36px;padding:6px 10px}
+    .choice-btn.selected{background:var(--primary);border-color:var(--primary-hi);color:#fff;box-shadow:none}
+    .voice-option{min-height:var(--hit);margin-top:0}
+    .voice-option input,input[type=checkbox]{appearance:none;-webkit-appearance:none;flex:none;width:24px;height:24px;margin:0;border:2px solid var(--line-hi);border-radius:7px;background:var(--s1);display:inline-grid;place-content:center;cursor:pointer}
+    input[type=checkbox]:checked{background:var(--primary);border-color:var(--primary-hi)}
+    input[type=checkbox]:checked::after{content:"";width:6px;height:12px;border:solid #fff;border-width:0 3px 3px 0;transform:translateY(-1px) rotate(45deg)}
+    .voice-option input[type=checkbox],input[type=checkbox]{width:24px;height:24px}
+    .field-divider,.setting-card hr{border-top-color:var(--line-soft)}
+    .mini-panel{background:var(--s1);border:1px solid var(--line-mid);border-radius:var(--r-lg);padding:22px}
+    .mini-panel h2{margin:0 0 14px;font-size:1.25rem;color:var(--text-hi)}
+    .dlg-sub{color:var(--blue);font-size:1rem}
+    .dlg-cols>.dlg-col{border-color:var(--line-soft)}
+
+    /* ---------- 設定視窗骨架（共用） ---------- */
+    .settings{width:min(1180px,100%);min-height:100vh;min-height:100dvh;margin:0 auto;padding:0 var(--pad) var(--pad);background:var(--s1);border:0;border-radius:0;box-shadow:none}
+    .settings-head{position:sticky;top:0;z-index:6;height:var(--head-h);margin:0 calc(var(--pad)*-1);padding:0 var(--pad);background:var(--s1);border-bottom:1px solid var(--line-soft);align-items:center}
+    .settings-head h1,#settings-title{margin:0;font-size:1.35rem;line-height:1.25;color:var(--text-hi);font-weight:800}
+    .settings-head>div{min-width:0}
+    #settings-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    #settings-title .ver{font-size:.8rem;font-weight:600;color:var(--muted);margin-left:.5em}
+    @media(max-width:700px){#settings-title{font-size:1.2rem}#settings-title .ver{font-size:.7rem;margin-left:.4em}.save-status{font-size:.75rem}}
+    .save-status{font-size:.8rem;font-weight:600;color:var(--green);margin-top:2px}
+    .tabs{position:sticky;top:var(--head-h);z-index:5;margin:0 calc(var(--pad)*-1) 18px;padding:10px var(--pad);gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;background:var(--s1);border-bottom:1px solid var(--line-soft)}
+    .tabs::-webkit-scrollbar{display:none}
+    .settings .tab-btn{--tc:var(--blue);flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;border-radius:999px;border-color:transparent;background:transparent;color:var(--muted);padding:8px 16px}
+    .settings .tab-btn::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--tc)}
+    .settings .tab-btn[data-tab=schedule]{--tc:var(--blue);color:var(--muted)}
+    .settings .tab-btn[data-tab=roster]{--tc:var(--green);color:var(--muted)}
+    .settings .tab-btn[data-tab=attendance]{--tc:var(--orange);color:var(--muted)}
+    .settings .tab-btn[data-tab=display]{--tc:#c8b8ff;color:var(--muted)}
+    .settings .tab-btn[data-tab=backup]{--tc:#8edbd0;color:var(--muted)}
+    .settings .tab-btn:hover{background:var(--s3);color:var(--text-hi)}
+    .settings .tab-btn.active{background:var(--s4);border-color:var(--line-mid);color:var(--text-hi)}
+    .settings .setting-card{background:var(--s2);border:1px solid var(--line-soft);border-radius:var(--r-lg);padding:20px;gap:4px}
+    .settings .setting-card h2,.settings .setting-card h3{color:var(--text-hi);font-size:1.1rem;font-weight:800}
+    .settings .setting-card h3{font-size:1rem}
+    .grid2{gap:18px}
+    .roster-card{background:var(--s3);border-color:var(--line-soft);border-radius:var(--r-sm)}
+    .roster-card-head strong{color:var(--blue)}
+    .schedule-day-head{background:var(--s2);color:var(--blue);padding:8px 4px;border-radius:0;border-bottom:1px solid var(--line-soft)}
+    .admin-schedule{padding:10px 4px;border-bottom:1px solid var(--line-soft)}
+    .admin-schedule .icon-btn{width:36px;height:36px}
+    .settings .setting-card.dragover{border-color:var(--primary-hi);background:var(--s3);box-shadow:none}
+    .copyright-note{margin-top:28px}
+
+    /* ---------- 導覽方案 1b：桌機左側欄、手機底部分頁列（導覽方案 1b） ---------- */
+    @media(min-width:1000px){
+      .settings{width:min(1320px,100%);display:grid;grid-template-columns:200px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;column-gap:28px;align-content:start}
+      .settings-head{grid-column:1/-1}
+      .tabs{grid-column:1;grid-row:2;position:sticky;top:calc(var(--head-h) + 18px);align-self:start;flex-direction:column;align-items:stretch;overflow:visible;margin:18px 0 0;padding:0;border:0;gap:4px}
+      .settings .tab-btn{justify-content:flex-start;border-radius:var(--r-md);padding:10px 14px;width:100%}
+      .tab-page{grid-column:2;grid-row:2;padding-top:18px}
+      .copyright-note{grid-column:1/-1}
+    }
+    @media(max-width:700px){
+      .settings{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+      .tabs{position:fixed;left:0;right:0;top:auto;bottom:0;z-index:130;margin:0;padding:6px 6px calc(6px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);gap:2px;border-top:1px solid var(--line-mid);border-bottom:0;background:var(--s2)}
+      .settings .tab-btn{flex-direction:column;gap:4px;justify-content:center;padding:6px 2px;border-radius:var(--r-sm);font-size:.78rem;line-height:1.2;min-height:56px;white-space:nowrap}
+      .settings .tab-btn::before{width:6px;height:6px}
+      .settings .tab-btn.active{background:var(--s4)}
+    }
+
+    /* ---------- 設定視窗：桌機／平板置中卡片；手機滿版 ---------- */
+    @media(min-width:901px){
+      .modal{padding:2.5vh 2vw}
+      .settings{min-height:0;border:1px solid var(--line-soft);border-radius:var(--r-lg)}
+      .settings-head{border-radius:var(--r-lg) var(--r-lg) 0 0}
+    }
+
+    /* ---------- 手機：對話框改為底部抽屜，列表與表單放大點擊區 ---------- */
+    @media(max-width:700px){
+      .mini-modal{place-items:end stretch;padding:0}
+      .mini-panel,.mini-panel.wide-dlg{width:100%;max-height:92dvh;border-radius:var(--r-lg) var(--r-lg) 0 0;border-bottom:0}
+      .settings .icon-btn,.mini-panel .icon-btn{width:var(--hit);height:var(--hit)}
+      .setting-card{padding:16px}
+      .subject-actions{grid-template-columns:1fr 1fr}
+      .subject-actions .input{grid-column:1/-1}
+    }
+
+    /* ---------- 後台資訊架構（v2.29）：4 分頁、考程步驟化、學期設定摺疊 ---------- */
+    .settings .tab-btn[data-tab=people]{--tc:var(--green)}
+    .settings .tab-btn[data-tab=semester]{--tc:#c8b8ff}
+    .settings .tab-btn[data-tab=backup]{--tc:#8edbd0}
+    .page-lead{margin:0 0 16px;color:var(--muted);font-size:.9rem;line-height:1.6;max-width:64ch}
+    .settings .btn.quiet{background:transparent;border-color:transparent;color:var(--muted)}
+    .settings .btn.quiet:hover{background:var(--s3);color:var(--text-hi)}
+    .settings .btn.quiet.danger{background:transparent;border-color:transparent;color:var(--danger-ink)}
+    .settings .btn.quiet.danger:hover{background:var(--danger-bg)}
+    .danger-zone{margin-top:14px;padding-top:10px;border-top:1px solid var(--line-soft);display:flex;justify-content:flex-start}
+    .danger-zone .btn{padding-left:6px;padding-right:6px}
+    .grade-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .grade-label{font-weight:800;color:var(--text-hi)}
+    .grade-bar .duration-grid{gap:6px}
+    .grade-bar .chip{min-height:36px;padding:6px 14px}
+    .sched-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start;margin-top:12px}
+    .people-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+    .step{display:grid;grid-template-columns:28px minmax(0,1fr);gap:0 12px;padding:14px 0}
+    .step+.step{border-top:1px solid var(--line-soft)}
+    .step-n{width:28px;height:28px;border-radius:50%;background:var(--s4);border:1px solid var(--line-mid);color:var(--text-hi);font-weight:800;font-size:.85rem;line-height:26px;text-align:center}
+    .step .field,.step .field-group{margin-bottom:0;min-width:0}
+    .time-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    .time-row .field{margin-bottom:6px}
+    .more{border:1px solid var(--line-soft);border-radius:var(--r-md);background:var(--s1);margin-top:12px}
+    .more>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;min-height:var(--hit);padding:8px 14px;font-weight:700;font-size:.9rem;color:var(--text)}
+    .more>summary::-webkit-details-marker{display:none}
+    .more>summary::after{content:"";width:8px;height:8px;margin-right:4px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg)}
+    .more[open]>summary::after{transform:rotate(-135deg)}
+    .more-body{display:flex;flex-direction:column;gap:12px;padding:2px 14px 14px}
+    .more-body .form-actions,.more-body h3{margin:0}
+    .add-student{display:grid;grid-template-columns:90px minmax(0,1fr) auto;gap:8px}
+    .jump-add{display:none}
+    .dropzone{border-style:dashed;border-color:var(--line-mid)}
+    .dropzone .file-action{align-self:flex-start;margin:6px 0 0}
+    .acc{border:1px solid var(--line-soft);border-radius:var(--r-lg);background:var(--s2);margin-bottom:12px;overflow:hidden}
+    .acc-head{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:4px 16px;text-align:left;min-height:60px;padding:12px 18px;background:transparent;border:0;color:var(--text-hi);font:inherit;cursor:pointer}
+    .acc-head:hover{background:var(--s3)}
+    .acc-title{font-weight:800;font-size:1.05rem}
+    .acc-sum{color:var(--muted);font-size:.85rem;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
+    .acc-chev{width:9px;height:9px;margin-right:4px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg)}
+    .acc.open .acc-chev{transform:rotate(-135deg)}
+    .acc-body{display:none;padding:14px 18px 18px;border-top:1px solid var(--line-soft)}
+    .acc.open .acc-body{display:block}
+    .remind-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:14px}
+    .remind-grid .reminder-stage{padding:14px;border:1px solid var(--line-soft);border-radius:var(--r-md);background:var(--s1);min-width:0}
+    .clock-grid{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:8px 28px}
+    .celebrate-box{margin:0;border-color:var(--line-soft)}
+    .save-bar{position:sticky;bottom:0;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:16px;padding:12px 0;background:var(--s1);border-top:1px solid var(--line-soft)}
+    @media(max-width:900px){
+      .sched-grid,.people-grid{grid-template-columns:1fr}
+      .clock-grid{grid-template-columns:1fr}
+      .jump-add{display:inline-flex}
+      .acc-head{grid-template-columns:minmax(0,1fr) auto}
+      .acc-sum{grid-column:1;grid-row:2}
+      .acc-title{grid-column:1}
+      .acc-chev{grid-column:2;grid-row:1/3}
+    }
+    @media(max-width:700px){
+      .time-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .time-row .field:last-child{grid-column:1/-1}
+      .save-bar{bottom:calc(68px + env(safe-area-inset-bottom));flex-wrap:wrap}
+      .save-bar{justify-content:flex-end}
+      .save-bar .hint{display:none}
+      .remind-grid{grid-template-columns:1fr}
+      .roster-card-actions .icon-btn{width:38px;height:38px}
+      .add-student{grid-template-columns:70px minmax(0,1fr)}
+      .add-student .btn{grid-column:1/-1}
+    }
   </style>
 </head>
 <body>
@@ -81,7 +295,7 @@ Authorization inquiries: derliang@gmail.com
           <div id="clock-face" class="clock-face"><svg class="ring2-svg" viewBox="0 0 200 200" aria-hidden="true"><circle id="ring-track2" class="ring-track2" cx="100" cy="100" r="84" style="display:none"/><circle id="progress-ring2" class="ring-progress ring-progress2" cx="100" cy="100" r="84" pathLength="100" stroke-dasharray="0 100" stroke-dashoffset="0"/><circle id="ring-track3" class="ring-track2" cx="100" cy="100" r="76" style="display:none"/><circle id="progress-ring3" class="ring-progress ring-progress2" cx="100" cy="100" r="76" pathLength="100" stroke-dasharray="0 100" stroke-dashoffset="0"/></svg><div id="hour-hand" class="hand hour-hand"></div><div id="minute-hand" class="hand minute-hand"></div><div id="second-hand" class="hand second-hand"></div><div class="pin"></div></div><div id="large-digital" class="digital-clock"><div class="digital-stack"><span id="large-digital-text">00:00</span><div id="digital-bar" class="digital-bar" aria-hidden="true"><div class="bar-track"><i id="digital-bar-fill"></i></div><span class="bar-lane"><span id="bar-car" class="bar-car"><svg viewBox="0 0 40 20"><path d="M2 14V10l8-1 5-5h11l5 5 7 1v4z" fill="#ef4444"/><path d="M16.5 5.5h8.5l3 3.5H13z" fill="#bae6fd"/><circle cx="11" cy="15" r="4" fill="#111827" stroke="#e5e7eb" stroke-width="1.2"/><circle cx="30" cy="15" r="4" fill="#111827" stroke="#e5e7eb" stroke-width="1.2"/></svg></span></span><span class="bar-flag"><svg viewBox="0 0 12 20"><rect x="0" y="0" width="1.4" height="20" fill="#cbd5e1"/><rect x="1.4" y="1" width="10" height="8" fill="#f8fafc"/><rect x="1.4" y="1" width="2.5" height="2.67" fill="#111"/><rect x="6.4" y="1" width="2.5" height="2.67" fill="#111"/><rect x="3.9" y="3.67" width="2.5" height="2.67" fill="#111"/><rect x="8.9" y="3.67" width="2.5" height="2.67" fill="#111"/><rect x="1.4" y="6.33" width="2.5" height="2.67" fill="#111"/><rect x="6.4" y="6.33" width="2.5" height="2.67" fill="#111"/></svg></span></div></div></div><svg class="clock-svg mover-svg" viewBox="0 0 200 200" aria-hidden="true"><g id="progress-dot" class="progress-dot" data-r="191.5" data-k="scale(.42) translate(-20 -19)" style="display:none"><g class="mv"></g></g><g id="progress-dot2" class="progress-dot" data-r="177.3" data-k="scale(.38) translate(-20 -19)" style="display:none"><g class="mv"></g></g><g id="progress-dot3" class="progress-dot" data-r="169.9" data-k="scale(.34) translate(-20 -19)" style="display:none"><g class="mv"></g></g><g id="finish-marker" class="finish-marker" data-r="191.5" data-k="scale(.45) translate(-6 -20)" style="display:none"><g class="mv"></g></g></svg><div class="flip-clock"><span id="flip-time">00:00</span></div>
         </div>
         <div class="clock-controls clock-nudge" aria-label="微調時鐘位置"><button class="btn up" title="向上移動" onclick="moveClock(0,-8)">↑</button><button class="btn down" title="向下移動" onclick="moveClock(0,8)">↓</button><button class="btn left" title="向左移動" onclick="moveClock(-8,0)">←</button><button class="btn right" title="向右移動" onclick="moveClock(8,0)">→</button><button class="btn reset" title="恢復預設位置" onclick="resetClockPosition()">●</button></div>
-        <button class="btn clock-time-quick" onclick="openClockTimeDialog()">設定</button>
+        <button class="btn clock-time-quick" onclick="openClockTimeDialog()">校時</button>
       </div>
       <div id="info-card" class="card info-card"><div id="state-label" class="state-label">載入中</div><div id="subject-now" class="subject-now">段考小幫手</div><div id="time-range" class="time-range"></div><div id="countdown" class="countdown"></div><div id="message" class="message"></div></div>
     </section>
@@ -96,33 +310,88 @@ Authorization inquiries: derliang@gmail.com
   <div id="settings-modal" class="modal" role="dialog" aria-modal="true">
     <div class="settings">
       <div class="settings-head"><div><h1 id="settings-title">設定｜段考小幫手</h1><div id="save-status" class="save-status">所有修改會自動儲存在本機</div></div><button class="btn" onclick="closeSettings()">返回</button></div>
-      <nav class="tabs"><button class="btn tab-btn active" data-tab="schedule" onclick="showTab('schedule')">考程設定</button><button class="btn tab-btn" data-tab="roster" onclick="showTab('roster')">學生名單</button><button class="btn tab-btn" data-tab="attendance" onclick="showTab('attendance')">出缺席</button><button class="btn tab-btn" data-tab="display" onclick="showTab('display')">提醒與時間</button><button class="btn tab-btn" data-tab="backup" onclick="showTab('backup')">離線使用</button></nav>
+      <nav class="tabs"><button class="btn tab-btn active" data-tab="schedule" onclick="showTab('schedule')">考程</button><button class="btn tab-btn" data-tab="people" onclick="showTab('people')">學生與缺席</button><button class="btn tab-btn" data-tab="semester" onclick="showTab('semester')">學期設定</button><button class="btn tab-btn" data-tab="backup" onclick="showTab('backup')">備份與離線</button></nav>
+
       <section id="tab-schedule" class="tab-page active">
-        <div class="grid2">
-          <div class="setting-card"><h2 id="exam-form-title">新增考程</h2><input id="edit-id" type="hidden"><div class="field-group"><div class="field"><span>年級（先選好自己班級）</span><div id="grade-grid" class="duration-grid"></div><p class="hint" id="grade-hint"></p></div><label class="field"><span>考程日期</span><input id="exam-date" class="input" type="date"></label><div class="field"><span>考試科目（已排定者不可重複選擇）</span><div id="subject-grid" class="subject-grid"></div></div><label class="field"><span>編輯科目（選一科後可改名、改預設時長；修改後會記在這台電腦）</span><div class="subject-actions"><input id="new-subject" class="input" type="text" placeholder="科目名稱"><input id="new-subject-dur" class="input" type="number" min="1" max="600" placeholder="預設分鐘" style="max-width:110px"><button class="btn" onclick="addSubject()">新增</button><button class="btn" onclick="renameSubject()">修改</button><button class="btn danger" onclick="deleteSelectedSubject()">刪除</button><button class="btn" onclick="resetGradeCatalog()">回復學校預設</button></div></label></div><hr class="field-divider"><div class="field-group"><div class="grid2"><label class="field"><span>開始時間</span><input id="start-time" class="input" type="time" step="300" onchange="timeFieldChanged('start')"></label><label class="field"><span>結束時間</span><input id="end-time" class="input" type="time" step="300" onchange="timeFieldChanged('end')"></label></div><label class="field"><span>考試時長（分）：選科目會帶入預設值，可自行修改；也可以不理會，直接輸入開始與結束時間</span><input id="exam-duration" class="input" type="number" min="1" max="600" oninput="timeFieldChanged('dur')"></label><div class="field"><span>快速設定時長</span><div id="duration-grid" class="duration-grid"></div></div><div class="field"><span>休息時間（存考程後自動接續下一節）</span><div id="break-grid" class="duration-grid"></div></div><p class="hint" id="break-hint"></p></div><div id="exam-error" class="error hidden"></div><div class="form-actions"><button class="btn" onclick="resetExamForm()">清除</button><button class="btn primary" onclick="saveExam()">儲存考程</button></div><div id="study-repeat" class="study-repeat hidden"><strong>自習重複排入（多日、多時段）</strong><p class="hint">要一次排多天、多個自習時段才用這裡；只排單筆自習，請直接用上面的時間欄位與「儲存考程」。每次輸入一筆日期與時段，按「加入清單」，最後按「排入自習時段」一次寫入。</p><div class="study-row"><label class="field"><span>日期</span><input id="study-date" class="input" type="date"></label><label class="field"><span>開始（時：分）</span><div class="hm-row"><input id="study-sh" class="input" type="number" min="0" max="23" inputmode="numeric" placeholder="時"><b>：</b><input id="study-sm" class="input" type="number" min="0" max="59" inputmode="numeric" placeholder="分"></div></label><label class="field"><span>結束（時：分）</span><div class="hm-row"><input id="study-eh" class="input" type="number" min="0" max="23" inputmode="numeric" placeholder="時"><b>：</b><input id="study-em" class="input" type="number" min="0" max="59" inputmode="numeric" placeholder="分"></div></label><div class="study-row-btns"><button id="study-add-btn" type="button" class="btn primary" onclick="addStudyItem()">加入清單</button><button id="study-cancel-btn" type="button" class="btn hidden" onclick="cancelStudyEdit()">取消修改</button></div></div><div id="study-error" class="error hidden"></div><div id="study-list" class="study-list"></div><div class="form-actions"><button type="button" class="btn" onclick="clearStudyList()">清空清單</button><button id="study-commit-btn" type="button" class="btn primary" onclick="commitStudyList()">排入自習時段</button></div><div id="study-msg" class="notice hidden"></div></div></div>
+        <p class="page-lead">排好每一科的日期與時間，首頁會自動依序顯示、倒數與提醒。</p>
+        <div class="grade-bar"><span class="grade-label">班級</span><div id="grade-grid" class="duration-grid"></div></div>
+        <p class="hint" id="grade-hint"></p>
+        <div class="sched-grid">
+          <div class="setting-card" id="exam-card">
+            <h2 id="exam-form-title">新增考程</h2><input id="edit-id" type="hidden">
+            <div class="step"><span class="step-n">1</span><label class="field"><span>考程日期</span><input id="exam-date" class="input" type="date"></label></div>
+            <div class="step"><span class="step-n">2</span><div class="field"><span>考試科目（已排定者不可重複選擇）</span><div id="subject-grid" class="subject-grid"></div>
+              <details class="more"><summary>管理科目</summary><div class="more-body"><p class="hint">選一科後可改名、改預設時長；修改後會記在這台電腦。</p><div class="subject-actions"><input id="new-subject" class="input" type="text" placeholder="科目名稱"><input id="new-subject-dur" class="input" type="number" min="1" max="600" placeholder="預設分鐘" style="max-width:110px"><button class="btn" onclick="addSubject()">新增</button><button class="btn" onclick="renameSubject()">修改</button><button class="btn quiet danger" onclick="deleteSelectedSubject()">刪除</button></div><div><button class="btn quiet" onclick="resetGradeCatalog()">回復學校預設科目</button></div></div></details></div></div>
+            <div class="step"><span class="step-n">3</span><div class="field-group"><div class="time-row"><label class="field"><span>開始時間</span><input id="start-time" class="input" type="time" step="300" onchange="timeFieldChanged('start')"></label><label class="field"><span>結束時間</span><input id="end-time" class="input" type="time" step="300" onchange="timeFieldChanged('end')"></label><label class="field"><span>時長（分）</span><input id="exam-duration" class="input" type="number" min="1" max="600" oninput="timeFieldChanged('dur')"></label></div><div class="field"><span>快速設定時長</span><div id="duration-grid" class="duration-grid"></div></div>
+              <details class="more"><summary>休息時間偏好</summary><div class="more-body"><p class="hint" id="break-hint"></p><div id="break-grid" class="duration-grid"></div></div></details></div></div>
+            <div id="exam-error" class="error hidden"></div>
+            <div class="form-actions"><button class="btn quiet" onclick="resetExamForm()">清除</button><button class="btn primary" onclick="saveExam()">儲存考程</button></div>
+            <div id="study-repeat" class="study-repeat hidden"><strong>自習重複排入（多日、多時段）</strong><p class="hint">要一次排多天、多個自習時段才用這裡；只排單筆自習，請直接用上面的時間欄位與「儲存考程」。每次輸入一筆日期與時段，按「加入清單」，最後按「排入自習時段」一次寫入。</p><div class="study-row"><label class="field"><span>日期</span><input id="study-date" class="input" type="date"></label><label class="field"><span>開始（時：分）</span><div class="hm-row"><input id="study-sh" class="input" type="number" min="0" max="23" inputmode="numeric" placeholder="時"><b>：</b><input id="study-sm" class="input" type="number" min="0" max="59" inputmode="numeric" placeholder="分"></div></label><label class="field"><span>結束（時：分）</span><div class="hm-row"><input id="study-eh" class="input" type="number" min="0" max="23" inputmode="numeric" placeholder="時"><b>：</b><input id="study-em" class="input" type="number" min="0" max="59" inputmode="numeric" placeholder="分"></div></label><div class="study-row-btns"><button id="study-add-btn" type="button" class="btn primary" onclick="addStudyItem()">加入清單</button><button id="study-cancel-btn" type="button" class="btn hidden" onclick="cancelStudyEdit()">取消修改</button></div></div><div id="study-error" class="error hidden"></div><div id="study-list" class="study-list"></div><div class="form-actions"><button type="button" class="btn quiet" onclick="clearStudyList()">清空清單</button><button id="study-commit-btn" type="button" class="btn primary" onclick="commitStudyList()">排入自習時段</button></div><div id="study-msg" class="notice hidden"></div></div>
+          </div>
           <div class="stack-col">
-          <div class="setting-card" id="all-schedules-card"><h2 class="card-head"><span>全部考程（<span id="schedule-count">0</span>筆）</span><button class="btn danger" onclick="clearSchedules()">清除考程</button></h2><div id="admin-schedules"></div></div>
-          <div class="setting-card" id="schedule-drop"><h2>上傳考程表（PDF／Word）</h2><p class="notice">支援 PDF 與 Word（.docx）考程時間科目表，也可以直接把檔案拖曳到這張卡片上放開。解析全程在這台電腦完成，不會上傳檔案或使用網路。</p><label class="btn primary file-action">選擇檔案<input id="schedule-file" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden onchange="parseScheduleFile(this)"></label></div>
+            <div class="setting-card" id="all-schedules-card"><h2 class="card-head"><span>全部考程（<span id="schedule-count">0</span>筆）</span><button class="btn jump-add" onclick="document.getElementById('exam-card').scrollIntoView({behavior:'smooth',block:'start'})">＋ 新增考程</button></h2><div id="admin-schedules"></div><div class="danger-zone"><button class="btn quiet danger" onclick="clearSchedules()">清除全部考程…</button></div></div>
+            <div class="setting-card dropzone" id="schedule-drop"><h2>匯入考程表（PDF／Word）</h2><p class="hint">把 PDF 或 Word（.docx）考程時間科目表拖到這張卡片放開，或選擇檔案。解析全程在這台電腦完成，不會上傳檔案或使用網路。</p><label class="btn file-action">選擇檔案<input id="schedule-file" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden onchange="parseScheduleFile(this)"></label></div>
           </div>
         </div>
         <div class="setting-card hidden" id="import-card" style="margin-top:16px"><h2>匯入確認</h2><p class="hint">上傳考程表的解析結果會列在這裡，勾選確認後才會寫入考程。</p><div id="import-status" class="notice import-status hidden"></div><div id="import-preview" class="import-preview"></div></div>
       </section>
-      <section id="tab-roster" class="tab-page"><div class="grid2"><div class="setting-card"><h2>依序貼上學生名單</h2><p class="notice">請依座號順序貼上學生姓名，座號會自動編上。</p><textarea id="roster-input" class="input roster-input" placeholder="王小明&#10;李小華"></textarea><div class="form-actions"><button class="btn primary" onclick="parseRoster()">套用並自動編號</button></div><div id="roster-error" class="error hidden"></div><hr><h3>新增學生</h3><div style="display:grid;grid-template-columns:90px 1fr auto;gap:8px"><input id="new-student-no" class="input" inputmode="numeric" placeholder="座號"><input id="new-student-name" class="input" placeholder="姓名"><button class="btn" onclick="addStudent()">新增</button></div></div><div class="setting-card"><h2 class="card-head"><span>學生名單（<span id="roster-count">0</span>人）</span><button class="btn danger" onclick="clearRoster()">清除名單</button></h2><div id="roster-preview"></div></div></div></section>
-      <section id="tab-attendance" class="tab-page"><div class="setting-card"><h2>點選缺席學生</h2><p class="notice">紅色代表缺席；再次點選可取消。</p><div id="attendance-grid" class="student-grid"></div></div></section>
-      <section id="tab-display" class="tab-page"><div class="grid2"><div class="setting-card"><h2>考前提醒</h2><div class="reminder-stage"><div class="voice-label-row"><span>第一次提醒（分鐘）</span><label class="voice-option"><input id="voice10" type="checkbox">語音提醒</label></div><input id="reminder10" class="input" type="number" min="1" max="60"><label class="field"><span>提醒訊息</span><textarea id="message10" class="input" rows="2"></textarea></label></div><div class="reminder-stage"><div class="voice-label-row"><span>強提醒（分鐘）</span><label class="voice-option"><input id="voice5" type="checkbox">語音提醒</label></div><input id="reminder5" class="input" type="number" min="1" max="30"><label class="field"><span>提醒訊息</span><textarea id="message5" class="input" rows="3"></textarea></label></div><div class="reminder-stage"><div class="voice-label-row"><span>最後提醒（分鐘）</span><label class="voice-option"><input id="voice1" type="checkbox">語音提醒</label></div><input id="reminder1" class="input" type="number" min="1" max="10"><label class="field"><span>提醒訊息</span><textarea id="message1" class="input" rows="2"></textarea></label></div><hr><div class="voice-settings"><label class="field"><span>語速 <output id="speech-rate-value">0.9</output></span><input id="speech-rate" class="input" type="range" min="0.6" max="1.3" step="0.1" oninput="document.getElementById('speech-rate-value').value=this.value"></label><label class="field"><span>音量 <output id="speech-volume-value">1.0</output></span><input id="speech-volume" class="input" type="range" min="0" max="1" step="0.1" oninput="document.getElementById('speech-volume-value').value=this.value"></label></div><label class="field"><span>考試結束後幾分鐘轉為自習</span><input id="post-exam-minutes" class="input" type="number" min="0" step="1"></label><label class="field"><span>自習模式提醒訊息</span><input id="study-message" class="input"></label><div class="celebrate-box"><label class="voice-option"><input id="celebrate-on" type="checkbox">慶祝考試結束（最後一科考試結束後 1 分鐘自動播放）</label><div class="celebrate-row"><label class="field"><span>慶祝樣式</span><select id="celebrate-style" class="input"></select></label><label class="field"><span>慶祝秒數（自動：每句 5 秒，最多 60 秒）</span><input id="celebrate-seconds" class="input" type="text" readonly tabindex="-1"></label></div><div class="field"><span>鼓勵語（勾選的會輪流出現，每句 5 秒）</span><div id="celebrate-lines" class="celebrate-lines" onchange="updateCelebrateSeconds()"></div></div><p id="celebrate-cap-hint" class="hint hidden"></p><label class="field"><span>自訂鼓勵語（選填，接在勾選的句子後面輪流出現）</span><input id="celebrate-message" class="input" type="text" maxlength="40" oninput="updateCelebrateSeconds()"></label><div class="form-actions"><button class="btn" onclick="startCelebration(true)">預覽慶祝動畫</button></div></div><div class="form-actions"><button class="btn" onclick="testVoice()">測試語音</button><button class="btn primary" onclick="saveDisplaySettings()">儲存提醒設定</button></div></div><div class="setting-card"><h2>時鐘樣式</h2><div class="field"><span>樣式</span><div id="clock-style" class="choice-row"><button class="btn choice-btn" data-value="analog" onclick="chooseClockSetting('clockStyle','analog')">指針式</button><button class="btn choice-btn" data-value="digital" onclick="chooseClockSetting('clockStyle','digital')">數字式</button></div></div><div class="field"><span>大小</span><div id="clock-size" class="choice-row"><button class="btn choice-btn" data-value="xl" onclick="chooseClockSetting('clockSize','xl')">特大</button><button class="btn choice-btn" data-value="lg" onclick="chooseClockSetting('clockSize','lg')">大</button><button class="btn choice-btn" data-value="md" onclick="chooseClockSetting('clockSize','md')">中</button><button class="btn choice-btn" data-value="sm" onclick="chooseClockSetting('clockSize','sm')">小</button></div></div><div class="field"><span>位置</span><div id="clock-position" class="choice-row"><button class="btn choice-btn" data-value="top" onclick="chooseClockSetting('clockPosition','top')">靠上</button><button class="btn choice-btn" data-value="center" onclick="chooseClockSetting('clockPosition','center')">置中</button></div></div><div class="field"><span>顯示</span><label class="voice-option"><input id="show-seconds" type="checkbox" onchange="toggleShowSeconds(this.checked)">顯示秒數</label><label class="voice-option"><input id="show-countdown" type="checkbox" checked onchange="toggleShowCountdown(this.checked)">顯示倒數</label><label class="field"><span>倒數造型</span><select id="bar-theme" class="input" onchange="chooseBarTheme(this.value)"></select></label><label class="voice-option"><input id="net-sync" type="checkbox" onchange="toggleNetSync(this.checked)">網路校時（台北時間）</label><p class="hint net-status"></p></div><p class="notice">勾選後，指針式會顯示秒針，數字式會顯示秒數。位置與微調設定會同時套用於兩種時鐘。</p></div></div></section>
-      <section id="tab-backup" class="tab-page"><div class="grid2"><div class="setting-card"><h2>離線使用</h2><p>下載檔會內嵌目前名單、出缺席、考程、提醒與時鐘設定，可在無網路環境直接開啟並繼續修改。</p><button class="btn success" onclick="downloadOfflineHtml()">下載離線使用檔</button></div><div class="setting-card"><h2>設定備份</h2><div class="form-actions" style="justify-content:flex-start"><button class="btn" onclick="exportJson()">匯出設定 JSON</button><label class="btn">匯入設定 JSON<input id="json-file" type="file" accept="application/json" hidden onchange="importJson(this)"></label><button class="btn danger" onclick="restoreEmbedded()">清除本機修改並回復檔案內設定</button></div></div></div></section>
+
+      <section id="tab-people" class="tab-page">
+        <p class="page-lead">考試當天點選缺席學生；名單一學期貼一次就好。</p>
+        <div class="people-grid">
+          <div class="setting-card"><h2>點選缺席學生</h2><p class="hint">紅色代表缺席；再點一次可取消。</p><div id="attendance-grid" class="student-grid"></div></div>
+          <div class="setting-card"><h2 class="card-head"><span>學生名單（<span id="roster-count">0</span>人）</span></h2><div id="roster-preview"></div>
+            <details id="roster-edit" class="more"><summary>貼上或新增名單</summary><div class="more-body"><p class="hint">請依座號順序貼上學生姓名，座號會自動編上。</p><textarea id="roster-input" class="input roster-input" placeholder="王小明&#10;李小華"></textarea><div class="form-actions"><button class="btn primary" onclick="parseRoster()">套用並自動編號</button></div><div id="roster-error" class="error hidden"></div><h3>新增單一學生</h3><div class="add-student"><input id="new-student-no" class="input" inputmode="numeric" placeholder="座號"><input id="new-student-name" class="input" placeholder="姓名"><button class="btn" onclick="addStudent()">新增</button></div></div></details>
+            <div class="danger-zone"><button class="btn quiet danger" onclick="clearRoster()">清除名單…</button></div></div>
+        </div>
+      </section>
+
+      <section id="tab-semester" class="tab-page">
+        <p class="page-lead">一學期設一次的項目。點開標題修改，標題旁會顯示目前的設定。</p>
+        <div class="acc" id="acc-remind"><button type="button" class="acc-head" aria-expanded="false" onclick="toggleAcc(this)"><span class="acc-title">考前提醒與語音</span><span class="acc-sum" id="sum-remind"></span><i class="acc-chev"></i></button><div class="acc-body">
+          <div class="remind-grid">
+            <div class="reminder-stage"><div class="voice-label-row"><span>第一次提醒（分鐘）</span><label class="voice-option"><input id="voice10" type="checkbox">語音提醒</label></div><input id="reminder10" class="input" type="number" min="1" max="60"><label class="field"><span>提醒訊息</span><textarea id="message10" class="input" rows="3"></textarea></label></div>
+            <div class="reminder-stage"><div class="voice-label-row"><span>強提醒（分鐘）</span><label class="voice-option"><input id="voice5" type="checkbox">語音提醒</label></div><input id="reminder5" class="input" type="number" min="1" max="30"><label class="field"><span>提醒訊息</span><textarea id="message5" class="input" rows="3"></textarea></label></div>
+            <div class="reminder-stage"><div class="voice-label-row"><span>最後提醒（分鐘）</span><label class="voice-option"><input id="voice1" type="checkbox">語音提醒</label></div><input id="reminder1" class="input" type="number" min="1" max="10"><label class="field"><span>提醒訊息</span><textarea id="message1" class="input" rows="3"></textarea></label></div>
+          </div>
+          <div class="voice-settings"><label class="field"><span>語速 <output id="speech-rate-value">0.9</output></span><input id="speech-rate" class="input" type="range" min="0.6" max="1.3" step="0.1" oninput="document.getElementById('speech-rate-value').value=this.value"></label><label class="field"><span>音量 <output id="speech-volume-value">1.0</output></span><input id="speech-volume" class="input" type="range" min="0" max="1" step="0.1" oninput="document.getElementById('speech-volume-value').value=this.value"></label></div>
+          <div class="form-actions"><button class="btn" onclick="testVoice()">測試語音</button></div>
+        </div></div>
+        <div class="acc" id="acc-study"><button type="button" class="acc-head" aria-expanded="false" onclick="toggleAcc(this)"><span class="acc-title">考後自習</span><span class="acc-sum" id="sum-study"></span><i class="acc-chev"></i></button><div class="acc-body">
+          <label class="field"><span>考試結束後幾分鐘轉為自習</span><input id="post-exam-minutes" class="input" type="number" min="0" step="1"></label><label class="field"><span>自習模式提醒訊息</span><input id="study-message" class="input"></label>
+        </div></div>
+        <div class="acc" id="acc-celebrate"><button type="button" class="acc-head" aria-expanded="false" onclick="toggleAcc(this)"><span class="acc-title">考試結束慶祝</span><span class="acc-sum" id="sum-celebrate"></span><i class="acc-chev"></i></button><div class="acc-body">
+          <div class="celebrate-box"><label class="voice-option"><input id="celebrate-on" type="checkbox">慶祝考試結束（最後一科考試結束後 1 分鐘自動播放）</label><div class="celebrate-row"><label class="field"><span>慶祝樣式</span><select id="celebrate-style" class="input"></select></label><label class="field"><span>慶祝秒數（自動：每句 5 秒，最多 60 秒）</span><input id="celebrate-seconds" class="input" type="text" readonly tabindex="-1"></label></div><div class="field"><span>鼓勵語（勾選的會輪流出現，每句 5 秒）</span><div id="celebrate-lines" class="celebrate-lines" onchange="updateCelebrateSeconds()"></div></div><p id="celebrate-cap-hint" class="hint hidden"></p><label class="field"><span>自訂鼓勵語（選填，接在勾選的句子後面輪流出現）</span><input id="celebrate-message" class="input" type="text" maxlength="40" oninput="updateCelebrateSeconds()"></label><div class="form-actions"><button class="btn" onclick="startCelebration(true)">預覽慶祝動畫</button></div></div>
+        </div></div>
+        <div class="acc" id="acc-clock"><button type="button" class="acc-head" aria-expanded="false" onclick="toggleAcc(this)"><span class="acc-title">時鐘樣式與顯示</span><span class="acc-sum" id="sum-clock"></span><i class="acc-chev"></i></button><div class="acc-body">
+          <p class="hint">選了立即生效，不需要按儲存。</p>
+          <div class="clock-grid">
+            <div class="field"><span>樣式</span><div id="clock-style" class="choice-row"><button class="btn choice-btn" data-value="analog" onclick="chooseClockSetting('clockStyle','analog')">指針式</button><button class="btn choice-btn" data-value="digital" onclick="chooseClockSetting('clockStyle','digital')">數字式</button></div></div>
+            <div class="field"><span>大小</span><div id="clock-size" class="choice-row"><button class="btn choice-btn" data-value="xl" onclick="chooseClockSetting('clockSize','xl')">特大</button><button class="btn choice-btn" data-value="lg" onclick="chooseClockSetting('clockSize','lg')">大</button><button class="btn choice-btn" data-value="md" onclick="chooseClockSetting('clockSize','md')">中</button><button class="btn choice-btn" data-value="sm" onclick="chooseClockSetting('clockSize','sm')">小</button></div></div>
+            <div class="field"><span>位置</span><div id="clock-position" class="choice-row"><button class="btn choice-btn" data-value="top" onclick="chooseClockSetting('clockPosition','top')">靠上</button><button class="btn choice-btn" data-value="center" onclick="chooseClockSetting('clockPosition','center')">置中</button></div></div>
+          </div>
+          <div class="field"><span>顯示</span><label class="voice-option"><input id="show-seconds" type="checkbox" onchange="toggleShowSeconds(this.checked)">顯示秒數</label><label class="voice-option"><input id="show-countdown" type="checkbox" checked onchange="toggleShowCountdown(this.checked)">顯示倒數</label><label class="field"><span>倒數造型</span><select id="bar-theme" class="input" onchange="chooseBarTheme(this.value)"></select></label><label class="voice-option"><input id="net-sync" type="checkbox" onchange="toggleNetSync(this.checked)">網路校時（台北時間）</label><p class="hint net-status"></p></div>
+          <p class="hint">勾選後，指針式會顯示秒針，數字式會顯示秒數。位置與微調設定會同時套用於兩種時鐘。</p>
+        </div></div>
+        <div class="save-bar"><span class="hint">提醒、考後自習、慶祝需要按儲存；時鐘樣式選了就生效。</span><button class="btn primary" onclick="saveDisplaySettings()">儲存設定</button></div>
+      </section>
+
+      <section id="tab-backup" class="tab-page">
+        <p class="page-lead">把名單、考程與設定帶到沒有網路的電腦，或備份起來。資料只存在這台電腦的瀏覽器，不會上傳。</p>
+        <div class="grid2"><div class="setting-card"><h2>離線使用檔</h2><p>下載檔會內嵌目前名單、出缺席、考程、提醒與時鐘設定，可在無網路環境直接開啟並繼續修改。</p><div class="form-actions" style="justify-content:flex-start"><button class="btn primary" onclick="downloadOfflineHtml()">下載離線使用檔</button></div></div><div class="setting-card"><h2>設定備份</h2><p class="hint">匯出的 JSON 可在其他電腦匯入，換電腦或還原時使用。</p><div class="form-actions" style="justify-content:flex-start"><button class="btn" onclick="exportJson()">匯出設定 JSON</button><label class="btn">匯入設定 JSON<input id="json-file" type="file" accept="application/json" hidden onchange="importJson(this)"></label></div><div class="danger-zone"><button class="btn quiet danger" onclick="restoreEmbedded()">清除本機修改並回復檔案內設定…</button></div></div></div>
+      </section>
       <footer class="copyright-note" aria-label="著作權與授權資訊"><small>© 2026 derliang｜保留所有權利｜限非營利使用｜<a href="https://github.com/derliang/exam-helper-clock/blob/main/LICENSE.md" target="_blank" rel="noopener">授權說明</a></small></footer>
     </div>
   </div>
 
-  <div id="clock-time-modal" class="mini-modal"><div class="mini-panel wide-dlg"><h2>設定</h2><div class="dlg-cols"><div class="dlg-col"><h3 class="dlg-sub">時間</h3><p class="notice">只調整本程式顯示時間，不會變更電腦時間。若設備日期嚴重不準，可一併調整年、月、日。按「確定」後，程式時間就是您輸入的日期與時分，秒數從 0 開始。</p><p id="offset-diff" class="hint"></p><label class="voice-option"><input id="q-net-sync" type="checkbox" onchange="toggleNetSync(this.checked)">網路校時（以台北時間為準，需連網）</label><p class="hint net-status"></p><div class="time-parts"><label class="field"><span>年</span><input id="clock-year" class="input" type="number" min="2000" max="2099" oninput="previewClockTime()"></label><label class="field"><span>月</span><input id="clock-month" class="input" type="number" min="1" max="12" oninput="previewClockTime()"></label><label class="field"><span>日</span><input id="clock-day" class="input" type="number" min="1" max="31" oninput="previewClockTime()"></label></div><p id="clock-date-preview" class="hint date-preview"></p><div class="time-parts"><label class="field"><span>時</span><input id="clock-hour" class="input" type="number" min="0" max="23" oninput="previewClockTime()"></label><label class="field"><span>分</span><input id="clock-minute" class="input" type="number" min="0" max="59" oninput="previewClockTime()"></label><label id="clock-second-wrap" class="field hidden"><span>秒（進階）</span><input id="clock-second" class="input" type="number" min="0" max="59" value="0" oninput="previewClockTime()"></label></div><div class="form-actions"><button class="btn" onclick="toggleClockSeconds()">進階：調整秒數</button><button class="btn" onclick="syncDeviceTime();closeClockTimeDialog()">與設備時間相同</button><button class="btn" onclick="closeClockTimeDialog()">取消</button><button class="btn primary" onclick="applyClockTime()">確定</button></div></div><hr class="field-divider"><div class="dlg-col"><h3 class="dlg-sub">時鐘樣式（選了立即生效）</h3><div class="dlg-row"><div class="field"><span>樣式</span><div id="q-clock-style" class="choice-row"><button class="btn choice-btn" data-value="analog" onclick="chooseClockSetting('clockStyle','analog')">指針式</button><button class="btn choice-btn" data-value="digital" onclick="chooseClockSetting('clockStyle','digital')">數字式</button></div></div><div class="field"><span>大小</span><div id="q-clock-size" class="choice-row"><button class="btn choice-btn" data-value="xl" onclick="chooseClockSetting('clockSize','xl')">特大</button><button class="btn choice-btn" data-value="lg" onclick="chooseClockSetting('clockSize','lg')">大</button><button class="btn choice-btn" data-value="md" onclick="chooseClockSetting('clockSize','md')">中</button><button class="btn choice-btn" data-value="sm" onclick="chooseClockSetting('clockSize','sm')">小</button></div></div></div><div class="dlg-row"><div class="field"><span>位置</span><div id="q-clock-position" class="choice-row"><button class="btn choice-btn" data-value="top" onclick="chooseClockSetting('clockPosition','top')">靠上</button><button class="btn choice-btn" data-value="center" onclick="chooseClockSetting('clockPosition','center')">置中</button></div></div><label class="voice-option"><input id="q-show-seconds" type="checkbox" onchange="toggleShowSeconds(this.checked)">顯示秒數</label><label class="voice-option"><input id="q-show-countdown" type="checkbox" checked onchange="toggleShowCountdown(this.checked)">顯示倒數</label><label class="field"><span>倒數造型</span><select id="q-bar-theme" class="input" onchange="chooseBarTheme(this.value)"></select></label></div></div></div><div class="form-actions"><button class="btn primary" onclick="closeClockTimeDialog()">完成</button></div></div></div>
+  <div id="clock-time-modal" class="mini-modal"><div class="mini-panel wide-dlg"><h2>校時與時鐘樣式</h2><div class="dlg-cols"><div class="dlg-col"><h3 class="dlg-sub">時間</h3><p class="notice">只調整本程式顯示時間，不會變更電腦時間。若設備日期嚴重不準，可一併調整年、月、日。按「確定」後，程式時間就是您輸入的日期與時分，秒數從 0 開始。</p><p id="offset-diff" class="hint"></p><label class="voice-option"><input id="q-net-sync" type="checkbox" onchange="toggleNetSync(this.checked)">網路校時（以台北時間為準，需連網）</label><p class="hint net-status"></p><div class="time-parts"><label class="field"><span>年</span><input id="clock-year" class="input" type="number" min="2000" max="2099" oninput="previewClockTime()"></label><label class="field"><span>月</span><input id="clock-month" class="input" type="number" min="1" max="12" oninput="previewClockTime()"></label><label class="field"><span>日</span><input id="clock-day" class="input" type="number" min="1" max="31" oninput="previewClockTime()"></label></div><p id="clock-date-preview" class="hint date-preview"></p><div class="time-parts"><label class="field"><span>時</span><input id="clock-hour" class="input" type="number" min="0" max="23" oninput="previewClockTime()"></label><label class="field"><span>分</span><input id="clock-minute" class="input" type="number" min="0" max="59" oninput="previewClockTime()"></label><label id="clock-second-wrap" class="field hidden"><span>秒（進階）</span><input id="clock-second" class="input" type="number" min="0" max="59" value="0" oninput="previewClockTime()"></label></div><div class="form-actions"><button class="btn" onclick="toggleClockSeconds()">進階：調整秒數</button><button class="btn" onclick="syncDeviceTime();closeClockTimeDialog()">與設備時間相同</button><button class="btn" onclick="closeClockTimeDialog()">取消</button><button class="btn primary" onclick="applyClockTime()">確定</button></div></div><hr class="field-divider"><div class="dlg-col"><h3 class="dlg-sub">時鐘樣式（選了立即生效）</h3><div class="dlg-row"><div class="field"><span>樣式</span><div id="q-clock-style" class="choice-row"><button class="btn choice-btn" data-value="analog" onclick="chooseClockSetting('clockStyle','analog')">指針式</button><button class="btn choice-btn" data-value="digital" onclick="chooseClockSetting('clockStyle','digital')">數字式</button></div></div><div class="field"><span>大小</span><div id="q-clock-size" class="choice-row"><button class="btn choice-btn" data-value="xl" onclick="chooseClockSetting('clockSize','xl')">特大</button><button class="btn choice-btn" data-value="lg" onclick="chooseClockSetting('clockSize','lg')">大</button><button class="btn choice-btn" data-value="md" onclick="chooseClockSetting('clockSize','md')">中</button><button class="btn choice-btn" data-value="sm" onclick="chooseClockSetting('clockSize','sm')">小</button></div></div></div><div class="dlg-row"><div class="field"><span>位置</span><div id="q-clock-position" class="choice-row"><button class="btn choice-btn" data-value="top" onclick="chooseClockSetting('clockPosition','top')">靠上</button><button class="btn choice-btn" data-value="center" onclick="chooseClockSetting('clockPosition','center')">置中</button></div></div><label class="voice-option"><input id="q-show-seconds" type="checkbox" onchange="toggleShowSeconds(this.checked)">顯示秒數</label><label class="voice-option"><input id="q-show-countdown" type="checkbox" checked onchange="toggleShowCountdown(this.checked)">顯示倒數</label><label class="field"><span>倒數造型</span><select id="q-bar-theme" class="input" onchange="chooseBarTheme(this.value)"></select></label></div></div></div><div class="form-actions"><button class="btn primary" onclick="closeClockTimeDialog()">完成</button></div></div></div>
 
   <div id="quick-exam-modal" class="mini-modal"><div class="mini-panel"><h2 id="quick-exam-title">修改考程</h2><input id="quick-exam-id" type="hidden"><label class="field"><span>日期</span><input id="quick-exam-date" class="input" type="date"></label><label class="field"><span>科目</span><select id="quick-exam-subject" class="input" onchange="quickSubjectChanged()"></select></label><div class="grid2"><label class="field"><span>開始時間</span><input id="quick-exam-start" class="input" type="time"></label><label class="field"><span>結束時間</span><input id="quick-exam-end" class="input" type="time"></label></div><div id="quick-duration" class="mini-duration"></div><div id="quick-exam-error" class="error hidden"></div><div class="form-actions"><button class="btn" onclick="closeQuickExamDialog()">取消</button><button class="btn primary" onclick="saveQuickExam()">儲存</button></div></div></div>
 
   <div id="absent-modal" class="mini-modal"><div class="mini-panel absent-dlg"><h2 id="absent-modal-title">新增缺席者</h2><input id="manual-absent-id" type="hidden"><div class="absent-body"><div id="absent-pick" class="absent-pick hidden"><div class="pick-title">從學生名單挑選（點一下加入缺席，再點一下取消）</div><div id="absent-pick-grid" class="pick-grid"></div><div class="pick-or">— 或手動輸入 —</div></div><div class="absent-manual"><div class="manual-title">或手動輸入</div><div class="grid2"><label class="field"><span>座號</span><input id="manual-absent-no" class="input" inputmode="numeric"></label><label class="field"><span>姓名</span><input id="manual-absent-name" class="input"></label></div><div class="form-actions"><button class="btn" onclick="closeAbsentDialog()">取消</button><button class="btn primary" onclick="saveManualAbsent()">儲存</button></div></div></div></div></div>
 
   <script>
-    const APP_VERSION='2.28.4',APP_DATE='2026-10-17';
+    const APP_VERSION='2.29.0',APP_DATE='2026-10-25';
     /* 版號只寫在 APP_VERSION，標題與設定頁一律由它產生，避免三處各自漂移 */
     document.title=`段考小幫手 v${APP_VERSION}`;
     /* 可重複排入考程的科目（其他科目同一科只能排一次）；同時是內建科目，不可刪除或改名 */
@@ -348,8 +617,12 @@ Authorization inquiries: derliang@gmail.com
     const jsArg=v=>escapeHtml(JSON.stringify(String(v)))
     function openSettings(){document.getElementById('settings-modal').classList.add('open');renderAdmin();resetExamForm()}
     function closeSettings(){document.getElementById('settings-modal').classList.remove('open')}
-    function showTab(name){document.querySelectorAll('.tab-page').forEach(x=>x.classList.toggle('active',x.id===`tab-${name}`));document.querySelectorAll('.tab-btn').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));const r={schedule:()=>{renderSubjects();renderAdminSchedules()},roster:()=>renderRoster(),attendance:renderAttendanceAdmin}[name];if(r)r()}
-    function renderAdmin(){renderLevelGrade();renderSubjects();renderAdminSchedules();renderBreakChoices();renderRoster();renderAttendanceAdmin();document.getElementById('reminder10').value=config.settings.reminder10;document.getElementById('reminder5').value=config.settings.reminder5;document.getElementById('reminder1').value=config.settings.reminder1;document.getElementById('voice10').checked=!!config.settings.voice10;document.getElementById('voice5').checked=!!config.settings.voice5;document.getElementById('voice1').checked=!!config.settings.voice1;document.getElementById('message10').value=config.settings.message10;document.getElementById('message5').value=config.settings.message5;document.getElementById('message1').value=config.settings.message1;document.getElementById('post-exam-minutes').value=config.settings.postExamMinutes;document.getElementById('celebrate-on').checked=config.settings.celebrate!==false;document.getElementById('celebrate-message').value=config.settings.celebrateMessage||'';renderCelebrateUI();document.getElementById('study-message').value=config.settings.studyMessage;document.getElementById('speech-rate').value=config.settings.speechRate;document.getElementById('speech-rate-value').value=config.settings.speechRate;document.getElementById('speech-volume').value=config.settings.speechVolume;document.getElementById('speech-volume-value').value=config.settings.speechVolume;renderClockChoices();applyClockSettings()}
+    function showTab(name){document.querySelectorAll('.tab-page').forEach(x=>x.classList.toggle('active',x.id===`tab-${name}`));document.querySelectorAll('.tab-btn').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));const r={schedule:()=>{renderSubjects();renderAdminSchedules()},people:()=>{renderRoster();renderAttendanceAdmin();const d=document.getElementById('roster-edit');if(d)d.open=!config.students.length},semester:renderSemesterSummary}[name];if(r)r()}
+    /* 後台「學期設定」摺疊區塊：標題旁顯示目前設定，點開才編輯 */
+    function toggleAcc(btn){const box=btn.closest('.acc'),on=box.classList.toggle('open');btn.setAttribute('aria-expanded',on?'true':'false')}
+    function renderSemesterSummary(){try{const v=id=>document.getElementById(id),s=config.settings,sz={xl:'特大',lg:'大',md:'中',sm:'小'},ps={top:'靠上',center:'置中'},n=['voice10','voice5','voice1'].filter(i=>v(i).checked).length;v('sum-remind').textContent=`考前 ${v('reminder10').value}／${v('reminder5').value}／${v('reminder1').value} 分鐘提醒，語音${n?`開 ${n} 階段`:'關閉'}`;v('sum-study').textContent=`考試結束後 ${v('post-exam-minutes').value} 分鐘轉為自習`;v('sum-celebrate').textContent=v('celebrate-on').checked?`開啟，${CELEBRATE_STYLES[v('celebrate-style').value]||''}`:'關閉';v('sum-clock').textContent=`${s.clockStyle==='digital'?'數字式':'指針式'}，${sz[s.clockSize]||'大'}，${ps[s.clockPosition]||'置中'}${s.showSeconds?'，顯示秒數':''}`}catch(e){console.warn(e)}}
+    ['input','change','click'].forEach(ev=>document.getElementById('tab-semester').addEventListener(ev,()=>setTimeout(renderSemesterSummary,0)));
+    function renderAdmin(){renderLevelGrade();renderSubjects();renderAdminSchedules();renderBreakChoices();renderRoster();renderAttendanceAdmin();document.getElementById('reminder10').value=config.settings.reminder10;document.getElementById('reminder5').value=config.settings.reminder5;document.getElementById('reminder1').value=config.settings.reminder1;document.getElementById('voice10').checked=!!config.settings.voice10;document.getElementById('voice5').checked=!!config.settings.voice5;document.getElementById('voice1').checked=!!config.settings.voice1;document.getElementById('message10').value=config.settings.message10;document.getElementById('message5').value=config.settings.message5;document.getElementById('message1').value=config.settings.message1;document.getElementById('post-exam-minutes').value=config.settings.postExamMinutes;document.getElementById('celebrate-on').checked=config.settings.celebrate!==false;document.getElementById('celebrate-message').value=config.settings.celebrateMessage||'';renderCelebrateUI();document.getElementById('study-message').value=config.settings.studyMessage;document.getElementById('speech-rate').value=config.settings.speechRate;document.getElementById('speech-rate-value').value=config.settings.speechRate;document.getElementById('speech-volume').value=config.settings.speechVolume;document.getElementById('speech-volume-value').value=config.settings.speechVolume;renderClockChoices();applyClockSettings();renderSemesterSummary()}
     function renderSubjects(){const edit=document.getElementById('edit-id').value,own=new Set(gradeList(config.grade).map(x=>x.name));const chip=s=>{const existing=isRepeatable(s)?null:config.schedules.find(x=>x.subject===s&&String(x.id)!==String(edit)),used=!!existing,title=existing?`已安排：${dateLabel(existing.date)} ${existing.start}－${existing.end}`:'';return`<button class="chip ${selectedSubject===s?'selected':''} ${used?'used':''}" ${used?'disabled':''} title="${title}" onclick="selectSubject(${jsArg(s)})">${escapeHtml(s)}${used?' ✓ 已排定':''}</button>`};const mine=config.subjects.filter(s=>own.has(s)||isRepeatable(s)),others=config.subjects.filter(s=>!own.has(s)&&!isRepeatable(s));document.getElementById('subject-grid').innerHTML=mine.map(chip).join('')+(others.length?`<div class="subject-sep">其他年級或舊版科目（已有考程在用）</div>`+others.map(chip).join(''):'');renderStudyRepeat()}
     /* 選科目時帶入該科預設時長；之後改開始時間、時長或結束時間，三者互相連動，老師也可以完全手動輸入 */
     function applyDefaultDuration(subject,startId,endId){const d=defaultDuration(subject),start=document.getElementById(startId).value;if(!d||!start)return;document.getElementById(endId).value=hhmm(Math.min(minutes(start)+d,24*60-1))}
@@ -1017,7 +1290,7 @@ Authorization inquiries: derliang@gmail.com
     function syncFullscreenBtn(){const b=document.getElementById('fullscreen-btn');if(b){const t=isFullscreen()?'視窗模式':'全螢幕';if(b.textContent!==t)b.textContent=t}}
     ['fullscreenchange','webkitfullscreenchange','resize'].forEach(n=>document.addEventListener(n,syncFullscreenBtn));window.addEventListener('resize',syncFullscreenBtn);syncFullscreenBtn();
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('settings-modal').classList.contains('open'))closeSettings()});
-    document.getElementById('settings-title').textContent=`設定｜段考小幫手 v${APP_VERSION}（${APP_DATE}）`;
+    document.getElementById('settings-title').innerHTML=`設定<span class="ver">｜段考小幫手 v${APP_VERSION}（${APP_DATE}）</span>`;
 
     /* ===== 慶祝考試結束：整個考試期間最後一科（不含自習）結束後 1 分鐘，放煙火約 5 秒，每次只放一次 ===== */
     function lastExamInfo(){const ex=config.schedules.filter(x=>!isRepeatable(x.subject));if(!ex.length)return null;const l=ex.reduce((a,b)=>(b.date+b.end>a.date+a.end?b:a));const[y,mo,d]=l.date.split('-').map(Number),[h,mi]=l.end.split(':').map(Number);return{key:`${l.date} ${l.end} ${l.subject}`,at:new Date(y,mo-1,d,h,mi+1,0).getTime()}}
