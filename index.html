@@ -180,6 +180,21 @@ Authorization inquiries: derliang@gmail.com
     .admin-schedule .icon-btn{width:36px;height:36px}
     .settings .setting-card.dragover{border-color:var(--primary-hi);background:var(--s3);box-shadow:none}
     .copyright-note{margin-top:28px}
+    .copyright-note .link-btn{background:none;border:0;margin:0;padding:6px 4px;color:inherit;font:inherit;text-decoration:underline;cursor:pointer}
+    .copyright-note .link-btn:hover{color:var(--text-hi)}
+    /* 授權說明頁（應用程式內獨立一頁） */
+    #license-modal{z-index:110}
+    #license-modal .doc-page{display:block;width:min(820px,100%)}
+    .doc-body{max-width:68ch;margin:0 auto;padding:8px 0 24px;color:var(--text);line-height:1.85}
+    .doc-body h2{margin:28px 0 8px;font-size:1.15rem;color:var(--text-hi)}
+    .doc-body h3{margin:18px 0 4px;font-size:1rem;color:var(--text-hi)}
+    .doc-body p{margin:0 0 10px}
+    .doc-body ul{margin:0 0 10px;padding-left:1.3em;display:flex;flex-direction:column;gap:8px}
+    .doc-body a{color:var(--blue)}
+    .doc-lead{margin-top:16px;padding:14px 16px;border:1px solid var(--line-mid);border-radius:var(--r-md);background:var(--s2);color:var(--text-hi);font-size:1.05rem;line-height:1.75}
+    .doc-full{margin-top:36px;padding-top:8px;border-top:1px solid var(--line-soft)}
+    .doc-full-title{margin-top:20px}
+    .doc-meta{color:var(--muted);font-size:.9rem}
 
     /* ---------- 導覽方案 1b：桌機左側欄、手機底部分頁列（導覽方案 1b） ---------- */
     @media(min-width:1000px){
@@ -380,7 +395,58 @@ Authorization inquiries: derliang@gmail.com
         <p class="page-lead">把名單、考程與設定帶到沒有網路的電腦，或備份起來。資料只存在這台電腦的瀏覽器，不會上傳。</p>
         <div class="grid2"><div class="setting-card"><h2>離線使用檔</h2><p>下載檔會內嵌目前名單、出缺席、考程、提醒與時鐘設定，可在無網路環境直接開啟並繼續修改。</p><div class="form-actions" style="justify-content:flex-start"><button class="btn primary" onclick="downloadOfflineHtml()">下載離線使用檔</button></div></div><div class="setting-card"><h2>設定備份</h2><p class="hint">匯出的 JSON 可在其他電腦匯入，換電腦或還原時使用。</p><div class="form-actions" style="justify-content:flex-start"><button class="btn" onclick="exportJson()">匯出設定 JSON</button><label class="btn">匯入設定 JSON<input id="json-file" type="file" accept="application/json" hidden onchange="importJson(this)"></label></div><div class="danger-zone"><button class="btn quiet danger" onclick="restoreEmbedded()">清除本機修改並回復檔案內設定…</button></div></div></div>
       </section>
-      <footer class="copyright-note" aria-label="著作權與授權資訊"><small>© 2026 derliang｜保留所有權利｜限非營利使用｜<a href="https://github.com/derliang/exam-helper-clock/blob/main/LICENSE.md" target="_blank" rel="noopener">授權說明</a></small></footer>
+      <footer class="copyright-note" aria-label="著作權與授權資訊"><small>© 2026 derliang｜保留所有權利｜限非營利使用｜<button type="button" class="link-btn" onclick="openLicense()">授權說明</button></small></footer>
+    </div>
+  </div>
+
+  <div id="license-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="license-title">
+    <div class="settings doc-page">
+      <div class="settings-head"><div><h1 id="license-title">授權說明</h1><div class="save-status">段考小幫手・時鐘置頂版</div></div><button class="btn" onclick="closeLicense()">返回</button></div>
+      <article class="doc-body">
+        <p class="doc-lead">聖功女中師生可於非營利教育用途免費使用。其他學校、機構或個人要使用，請先寄信給作者，取得作者以 Email 明確回覆的同意。所有使用者一律限非營利使用。</p>
+
+        <h2>一句話看懂</h2>
+        <ul>
+          <li><b>聖功女中師生：</b>在非營利教育用途內，免費使用。</li>
+          <li><b>其他學校、機構、個人：</b>先寄信申請，收到作者 Email 明確同意後，才能在核准範圍內使用。寄出申請信本身不代表已獲授權。</li>
+          <li><b>所有人：</b>不得營利。免費使用許可不等於商業授權。</li>
+          <li><b>未經作者另行授權：</b>不得複製程式碼、修改、再散布、公開發布、轉授權，也不得刪除或竄改著作權資訊。</li>
+        </ul>
+
+        <h2>資料與隱私</h2>
+        <p>考程、學生名單、出缺席紀錄與提醒設定都屬於各使用學校與使用者，只儲存在這台電腦的瀏覽器，作者不蒐集、不上傳。若啟用「網路校時」，程式只讀取目前時間，不傳送上述資料。</p>
+
+        <h2>免責聲明</h2>
+        <p>本程式依現狀提供，不附任何明示或默示的保證。因使用本程式所生的任何損失（包含考程、時間顯示、提醒或出缺席統計有誤所造成者），作者不負責任。請在考試前自行確認考程與時間正確。</p>
+
+        <h2>如何申請</h2>
+        <p>請寄信至 <a href="mailto:derliang@gmail.com">derliang@gmail.com</a>，說明使用單位、用途、對象、範圍，以及是否涉及部署或複製。收到作者的 Email 明確同意後，僅能在核准的範圍內使用。不需另外簽署紙本或正式書面契約，除非雙方另有約定。</p>
+
+        <div class="doc-full">
+          <h2 class="doc-full-title">完整條款</h2>
+          <p class="doc-meta">Copyright © 2026 黃德亮（公開作者識別：derliang）。保留所有權利（All Rights Reserved）。聯絡信箱：derliang@gmail.com</p>
+          <h3>一、授權範圍</h3>
+          <p>本文件適用於本程式中由著作權人擁有或有權授權之原創程式碼及相關作品，不包含另有授權條款之第三方元件、素材或程式碼。</p>
+          <h3>二、聖功女中師生使用</h3>
+          <p>臺南市天主教聖功女子高級中學之在校師生，得於非營利教育目的範圍內免費操作本程式。此許可不包含任意重製程式碼、修改、重新發布、散布、轉授權或商業利用之權利；若有前述需求，請先取得另行授權。</p>
+          <h3>三、其他學校、機構或個人</h3>
+          <p>其他學校及其師生、機構與個人如欲使用本程式，請先寄信至 derliang@gmail.com，說明使用單位、用途、對象、範圍及是否涉及部署或複製。須取得著作權人透過 Email 明確回覆同意，且僅能於核准範圍內使用。寄送申請信本身不代表已獲授權。無須另行簽署紙本或正式書面契約，除非雙方另有約定。</p>
+          <h3>四、所有使用者均須遵守非營利限制</h3>
+          <p>除著作權人另外明確授權外，所有使用者均不得將本程式用於營利活動，包括但不限於販售、收費授權、作為付費服務之核心、收費部署、付費託管、商業轉售或經重新包裝後牟利。即使取得免費使用許可，也不代表取得商業授權。</p>
+          <h3>五、保留權利</h3>
+          <p>未經著作權人另行授權，不得擅自重製、修改、改作、再散布、公開發布、轉授權本程式，或刪除／竄改原有著作權資訊、冒稱為原作者。本條不限制依法不得排除的使用權利，亦不變更第三方原有授權。</p>
+          <h3>六、公開原始碼之說明</h3>
+          <p>本程式的原始碼若公開於網路平台，僅代表原始碼可依平台條款被檢視；不代表本程式採開放原始碼授權，亦不代表授權任何第三人自由利用、複製、修改、散布或販售。平台條款明定之權利仍依平台條款處理。</p>
+          <h3>七、第三方素材與既有授權</h3>
+          <p>第三方套件、素材、程式碼及其他著作依其各自授權使用。本文件不主張超出著作權人實際擁有或可授權之權利，亦不溯及撤銷此前已有效授出的授權。</p>
+          <h3>八、聯絡</h3>
+          <p>授權、跨校使用、合作與其他詢問：derliang@gmail.com</p>
+          <h3>九、生效與版本</h3>
+          <p>本版聲明日期：2026-10-24。此日期為聲明版本日期，不應被表述為作品的首次創作日期。</p>
+          <h3>十、既有著作權聲明</h3>
+          <p>本程式另有著作權聲明（© 2026 黃德亮，聖功女中）。2026-10-24 起，其中的「書面同意」已統一改為「作者以 Email 明確同意」，與本文件一致；兩份文件如有歧異，以限制較嚴格者為準，且不得解讀為對任何人另行授予額外許可。</p>
+        </div>
+      </article>
     </div>
   </div>
 
@@ -391,7 +457,7 @@ Authorization inquiries: derliang@gmail.com
   <div id="absent-modal" class="mini-modal"><div class="mini-panel absent-dlg"><h2 id="absent-modal-title">新增缺席者</h2><input id="manual-absent-id" type="hidden"><div class="absent-body"><div id="absent-pick" class="absent-pick hidden"><div class="pick-title">從學生名單挑選（點一下加入缺席，再點一下取消）</div><div id="absent-pick-grid" class="pick-grid"></div><div class="pick-or">— 或手動輸入 —</div></div><div class="absent-manual"><div class="manual-title">或手動輸入</div><div class="grid2"><label class="field"><span>座號</span><input id="manual-absent-no" class="input" inputmode="numeric"></label><label class="field"><span>姓名</span><input id="manual-absent-name" class="input"></label></div><div class="form-actions"><button class="btn" onclick="closeAbsentDialog()">取消</button><button class="btn primary" onclick="saveManualAbsent()">儲存</button></div></div></div></div></div>
 
   <script>
-    const APP_VERSION='2.29.0',APP_DATE='2026-10-25';
+    const APP_VERSION='2.29.1',APP_DATE='2026-10-25';
     /* 版號只寫在 APP_VERSION，標題與設定頁一律由它產生，避免三處各自漂移 */
     document.title=`段考小幫手 v${APP_VERSION}`;
     /* 可重複排入考程的科目（其他科目同一科只能排一次）；同時是內建科目，不可刪除或改名 */
@@ -617,6 +683,9 @@ Authorization inquiries: derliang@gmail.com
     const jsArg=v=>escapeHtml(JSON.stringify(String(v)))
     function openSettings(){document.getElementById('settings-modal').classList.add('open');renderAdmin();resetExamForm()}
     function closeSettings(){document.getElementById('settings-modal').classList.remove('open')}
+    /* 授權說明：應用程式內的獨立一頁（離線也能看，不連到外部網站） */
+    function openLicense(){const m=document.getElementById('license-modal');m.classList.add('open');m.scrollTop=0}
+    function closeLicense(){document.getElementById('license-modal').classList.remove('open')}
     function showTab(name){document.querySelectorAll('.tab-page').forEach(x=>x.classList.toggle('active',x.id===`tab-${name}`));document.querySelectorAll('.tab-btn').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));const r={schedule:()=>{renderSubjects();renderAdminSchedules()},people:()=>{renderRoster();renderAttendanceAdmin();const d=document.getElementById('roster-edit');if(d)d.open=!config.students.length},semester:renderSemesterSummary}[name];if(r)r()}
     /* 後台「學期設定」摺疊區塊：標題旁顯示目前設定，點開才編輯 */
     function toggleAcc(btn){const box=btn.closest('.acc'),on=box.classList.toggle('open');btn.setAttribute('aria-expanded',on?'true':'false')}
